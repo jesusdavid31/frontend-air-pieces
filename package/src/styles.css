@@ -1,0 +1,97 @@
+.invalid-field {
+    color: #FA896B;
+    font-family: 'Plus Jakarta Sans',sans-serif;
+    font-weight: 500;
+    font-size: 0.90rem;
+    line-height: 1.66;
+    text-align: left;
+    margin-top: 3px;
+    margin-right: 14px;
+    margin-bottom: 0;
+    margin-left: 8px;
+}
+
+.capitalize-text{
+    text-transform: capitalize;
+}
+
+.center-loading{
+    width: 55px;
+    margin: 0 auto;
+}
+
+.no-content{
+	width: auto;
+    height: auto;
+    max-height: 450px;
+    max-width: 80%;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+}
+
+.without-results p {
+	font-weight: 500;
+    font-size: 20px;
+}
+
+/* From uiverse.io by @barisdogansutcu */
+.loading-data {
+    width: 4.25em;
+    transform-origin: center;
+    animation: rotate4 2s linear infinite;
+    margin-top: 5vh;
+    margin-bottom: 4rem;
+}
+   
+.center-loading circle {
+    fill: none;
+    stroke: hsl(214, 97%, 59%);
+    stroke-width: 2;
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+    animation: dash4 1.5s ease-in-out infinite;
+}
+
+/* Tamaño dinamico de un div */
+.dynamic-form .complete-box {
+    flex-basis: 100%;
+    max-width: 100%;
+}
+
+.dynamic-form .half-container {
+    flex-basis: 50%;
+    max-width: 50%;
+}
+
+/* Imagen seleccionada */
+.selected-image {
+    margin-bottom: 10px;
+    border: 1px solid #f1f1f1;
+    border-radius: 15px;
+    max-height: 300px;
+    width: 100%;
+}
+
+@keyframes rotate4 {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes dash4 {
+    0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+    }
+
+    50% {
+        stroke-dasharray: 90, 200;
+        stroke-dashoffset: -35px;
+    }
+
+    100% {
+        stroke-dashoffset: -125px;
+    }
+}
+   

@@ -1,0 +1,19 @@
+.login-container {
+    background-image: url(../../../assets/images/backgrounds/plane1.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.create_account_text {
+    font-weight: 500;
+}
+
+.link_to_create_account {
+    text-decoration: none;
+    color: #0e86d4;
+}
