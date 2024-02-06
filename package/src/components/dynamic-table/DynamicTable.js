@@ -40,7 +40,7 @@ const DynamicTable = ({
                     <Table
                         aria-label="simple table"
                         sx={{
-                            whiteSpace: 'normal'    
+                            whiteSpace: 'normal'   
                         }} 
                     >
                         

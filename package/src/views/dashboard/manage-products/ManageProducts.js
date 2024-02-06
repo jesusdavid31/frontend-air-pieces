@@ -10,7 +10,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
 
-import { Grid, Box, Card, CardContent, Typography, Fab, IconButton } from '@mui/material';
+import { Grid, Box, Card, CardContent, Typography, Fab, IconButton, OutlinedInput, Button, InputAdornment } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -22,8 +22,7 @@ import Swal from 'sweetalert2';
 
 import Modal from '../../../components/modal/Modal';
 import SimpleDialog from '../../../components/modal/SimpleDialog';
-// import ElementLimiter from '../../../components/element-limiter/ElementLimiter';
-// import Breadcrumb from '../../../layouts/full-layout/breadcrumb/Breadcrumb';
+import Breadcrumb from '../../../layouts/FullLayout/Breadcrumb/Breadcrumb';
 import PageContainer from '../../../components/container/PageContainer';
 import ProductForm from './components/product-form/ProductForm';
 
@@ -80,6 +79,12 @@ const ManageProducts = () => {
   const [filterStatus, setFilterStatus] = useState(true);
   const openMenu = Boolean(anchorEl);
   const withoutImage = 'https://res.cloudinary.com/dsteu2frb/image/upload/v1706025798/samples/ecommerce/engine-153649_1280_nmko40.webp';
+
+  // Estados de filtros o busquedas
+  const [searching, setSearching] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [invalidSearchTerm, setInvalidSearchTerm] = useState(false);
+  const searchField = useState('');
 
   const mapProducts = (data) => {
     const result = data.map((item) => ({
@@ -283,125 +288,264 @@ const ManageProducts = () => {
     getProducts(1);
   };
 
+  const clearSearch = () => {
+    setSearching(false);
+    setSearchTerm('');
+    setTotal(tempTotal);
+    // setActualPage(tempCurrentPage);
+    setPageCount(Math.ceil(tempTotal / 20));
+    setInvalidSearchTerm(false);
+    // setEvidences(tempEvidences);
+    mapProducts(products);
+  }
+
+  const search = async(value = '') => {
+
+    setSearchTerm(value);
+
+    if ( value.length === 0 ) {
+        clearSearch();
+        return;
+    }
+
+    if ( value.length < 5 ) {
+        setInvalidSearchTerm(true);
+        return;
+    }
+
+    setInvalidSearchTerm(false);
+    setCharging(true);
+    const resp = await fetchConToken( `evidence?page=${ actualPage }&description=${ value }&is_active=true`, token );
+
+    if( resp?.ok ){
+      setActualPage(1);
+      mapProducts(resp?.data);
+      setPageCount(Math.ceil(resp?.dataNumber / 20));
+      setTotal(resp?.dataNumber);
+    }
+
+    setCharging(false);
+
+  };
+
+  const searchByPage = async(term, getFrom) => {
+
+    setCharging(true);
+    const resp = await fetchConToken( `evidence?page=${ getFrom }&description=${ term }&is_active=true`, token );
+    
+    if( resp?.ok ){
+      mapProducts(resp?.data);
+      setPageCount(Math.ceil(resp?.dataNumber / 20));
+      setTotal(resp?.dataNumber);
+    }
+
+    setCharging(false);
+      
+  };
+
   return (
     <PageContainer title="Manage Products" description="Manage Products">
       {/* breadcrumb */}
-      {/* <Breadcrumb title="Manage Products" /> */}
+      <Breadcrumb title="Manage Products" />
       {/* end breadcrumb */}
 
-      <Grid container spacing={0}>
-        {/* ------------------------- row 1 ------------------------- */}
-        <Grid item xs={12} lg={12}>
-          <Card>
-            <CardContent>
-              <Box
-                sx={{
-                  overflow: {
-                    xs: 'auto',
-                    sm: 'unset',
-                  },
-                }}
-              >
+      <Box>
 
-                <Grid container spacing={4}>
+        <Grid
+          container
+          sx={{
+            paddingLeft: '15px',
+            paddingRight: '15px'
+          }}
+          spacing={0}
+        >
 
-                  <Grid item xs={12} lg={4} md={4}>
-                      
-                    <Typography variant="h3" 
-                        sx={{
-                            mt: 2,
-                            mb: 2,
-                            color: '#0e86d4'
-                        }}
-                    >
-                      Total items: {total}
-                    </Typography>
-                      
-                  </Grid>
+          <Grid item xs={12} sm={12} lg={12}>
+            
+            <Box sx={{ display: 'flex', marginTop: '10px', marginBottom: '30px', width: '100%', gap: '10px' }}>
 
-                  { !charging && 
-
-                    <Grid item xs={12} md={8} lg={8}>
-
-                      <Box
-                        sx={{
-                        padding: '0px 0px',
-                        }}
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="right"
-                      >
-
-                        <Fab
-                          variant="extended"
-                          aria-label="primary-send" 
-                          type="button" 
-                          className='manually-add-questions-button'
-                          sx={{
-                            mt: 2,
-                            mr: 1,
-                            mb: 2,
-                            backgroundColor: '#FFCB59',
-                            color: '#ffffff',
-                            '&:hover': {
-                                backgroundColor: '#FFCB59',
-                                color: '#2600FF'
-                            }
-                          }}
-                          onClick={() => handleModalOpen( 'create' )}
-                        >
-                            <FeatherIcon icon="plus" width="20" />
-                            <Typography
-                                sx={{
-                                    ml: 1,
-                                    textAlign: "right"
-                                }}
-                            >
-                              Publish product
-                            </Typography>
-                        </Fab>
-                      </Box>
-
-                    </Grid>
-
-                  }
-
-                </Grid>
-
-                <DynamicTable
-                  columns={columns}
-                  currentData={products}
-                  isLoading={charging}
-                  actualPage={actualPage}
-                  handlePageClick={handlePageClick}
-                  totalPages={pageCount}
-                />
-
+              <Box sx={{ width: '20%' }}>
+                <Button
+                    onClick={() => clearSearch()}
+                    sx={{
+                        width: '100%',
+                        bgcolor: '#E32C6D',
+                        color: '#ffffff',
+                        height: '40px',
+                        '&:hover': {
+                            backgroundColor: '#c1064a',
+                            color: 'white'
+                        }
+                    }}
+                >
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <FeatherIcon icon="x-circle" width="15" />
+                        <span style={{ marginLeft: '5px' }}>Limpiar búsqueda</span>
+                    </Box>
+                </Button>
               </Box>
 
-              <Modal 
-                openModal={openModal}
-                handleModalClose={handleModalClose}
-                iconName={modalIcon}
-                title={ actionText }
-              >
-                <ProductForm
-                  values={values}
-                  errors={errors}
-                  getFieldProps={getFieldProps} 
-                  setFieldValue={setFieldValue}
-                  touched={touched}
-                  saveForm={handleSubmit}
-                  updateData={updateData}
+              <Box sx={{ width: '60%' }}>
+                <OutlinedInput
+                  startAdornment={
+                      <InputAdornment position="start">
+                          <FeatherIcon icon="search" width="20" />
+                      </InputAdornment>
+                  }
+                  id="search-text" 
+                  value={searchTerm}
+                  placeholder="Introduzca el término de búsqueda"
+                  onChange={e => search(e.target.value)}
+                  fullWidth
+                  size="small"
                 />
-              </Modal>
+              </Box>
 
-              <SimpleDialog text='Error, you must change at least one field of the form to be able to update.' open={open} onClose={handleCloseSimpleDialog} color={simpleDialogTextColor} />
+              <Box sx={{ width: '20%' }}>
+                <Button
+                    onClick={() => clearSearch()}
+                    sx={{
+                        width: '100%',
+                        bgcolor: '#E32C6D',
+                        color: '#ffffff',
+                        height: '40px',
+                        '&:hover': {
+                            backgroundColor: '#c1064a',
+                            color: 'white'
+                        }
+                    }}
+                >
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <FeatherIcon icon="x-circle" width="15" />
+                        <span style={{ marginLeft: '5px' }}>Limpiar búsqueda</span>
+                    </Box>
+                </Button>
+              </Box>
 
-            </CardContent>
-          </Card>
+            </Box>
+
+          </Grid>
+
+          <Grid item xs={12} sm={12} lg={12}>
+
+            <Card variant="outlined" sx={{ margin: '0px' }}>
+              
+              <CardContent>
+                
+                <Box
+                  sx={{
+                    overflow: {
+                      xs: 'auto',
+                      sm: 'unset',
+                    },
+                  }}
+                >
+
+                  <Grid container spacing={4}>
+
+                    <Grid item xs={12} md={4} lg={4}>
+                        
+                      <Typography variant="h3" 
+                        sx={{
+                          mt: 2,
+                          mb: 2,
+                          color: '#0e86d4'
+                        }}
+                      >
+                        Total items: {total}
+                      </Typography>
+                        
+                    </Grid>
+
+                    { !charging && 
+
+                      <Grid item xs={12} md={8} lg={8}>
+
+                        <Box
+                          sx={{
+                          padding: '0px 0px',
+                          }}
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="right"
+                        >
+
+                          <Fab
+                            variant="extended"
+                            aria-label="primary-send" 
+                            type="button" 
+                            className='manually-add-questions-button'
+                            sx={{
+                              mt: 2,
+                              mr: 1,
+                              mb: 2,
+                              backgroundColor: '#FFCB59',
+                              color: '#ffffff',
+                              '&:hover': {
+                                  backgroundColor: '#FFCB59',
+                                  color: '#2600FF'
+                              }
+                            }}
+                            onClick={() => handleModalOpen( 'create' )}
+                          >
+                              <FeatherIcon icon="plus" width="20" />
+                              <Typography
+                                  sx={{
+                                      ml: 1,
+                                      textAlign: "right"
+                                  }}
+                              >
+                                Publish product
+                              </Typography>
+                          </Fab>
+                        </Box>
+
+                      </Grid>
+
+                    }
+
+                  </Grid>
+
+                  <DynamicTable
+                    columns={columns}
+                    currentData={products}
+                    isLoading={charging}
+                    actualPage={actualPage}
+                    handlePageClick={handlePageClick}
+                    totalPages={pageCount}
+                  />
+
+                </Box>
+
+                <Modal 
+                  openModal={openModal}
+                  handleModalClose={handleModalClose}
+                  iconName={modalIcon}
+                  title={ actionText }
+                >
+                  <ProductForm
+                    values={values}
+                    errors={errors}
+                    getFieldProps={getFieldProps} 
+                    setFieldValue={setFieldValue}
+                    touched={touched}
+                    saveForm={handleSubmit}
+                    updateData={updateData}
+                  />
+                </Modal>
+
+                <SimpleDialog text='Error, you must change at least one field of the form to be able to update.' open={open} onClose={handleCloseSimpleDialog} color={simpleDialogTextColor} />
+
+              </CardContent>
+              
+            </Card>
+
+          </Grid>
+
         </Grid>
-      </Grid>
+
+      </Box>
+      
     </PageContainer>
   )
 };

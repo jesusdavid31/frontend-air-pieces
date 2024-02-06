@@ -1,3 +1,7 @@
+body {
+    margin: 0px;
+}
+
 .invalid-field {
     color: #FA896B;
     font-family: 'Plus Jakarta Sans',sans-serif;
