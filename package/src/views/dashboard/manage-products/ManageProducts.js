@@ -10,7 +10,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
 
-import { Grid, Box, Card, CardContent, Typography, Fab, IconButton, OutlinedInput, Button, InputAdornment } from '@mui/material';
+import { Grid, Box, Card, CardContent, Typography, Fab, IconButton, OutlinedInput, Button, InputAdornment, MenuItem } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -32,6 +32,7 @@ import detectChanges from '../../../utils/detectChanges';
 
 import 'moment/locale/es';
 import DynamicTable from '../../../components/dynamic-table/DynamicTable';
+import CustomSelect from '../../../components/FormElements/custom-elements/CustomSelect';
 
 import './manage-products.css';
 
@@ -59,9 +60,11 @@ const ManageProducts = () => {
 
   const [charging, setCharging] = useState(true);
   const [products, setProducts] = useState([]);
+  const [tempProducts, setTempProducts] = useState([]);
   const [productId, setProductId] = useState('');
 
   const [actualPage, setActualPage] = useState(1);
+  const [tempCurrentPage, setTempCurrentPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [total, setTotal] = useState(0);
   const [tempTotal, setTempTotal] = useState(0);
@@ -83,6 +86,7 @@ const ManageProducts = () => {
   // Estados de filtros o busquedas
   const [searching, setSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFilter, setSearchFilter] = useState('');
   const [invalidSearchTerm, setInvalidSearchTerm] = useState(false);
   const searchField = useState('');
 
@@ -114,6 +118,7 @@ const ManageProducts = () => {
       const resp = await fetchConToken( `product?page=${page}`, token );
 
       if( resp?.success ){
+        setTempProducts(resp.data?.products);
         mapProducts(resp.data?.products);
         setTotal(resp.data?.dataCount);
         setTempTotal(resp.data?.dataCount);
@@ -266,7 +271,12 @@ const ManageProducts = () => {
 
   const handlePageClick = (event, value) => {
     setActualPage(value);
-    getProducts(value);
+    if(searchTerm.length > 0){
+      searchByPage(searchTerm, value);
+    }else{
+      setTempCurrentPage(value);
+      getProducts(value);
+    }
   };
 
   const handleCloseSimpleDialog = () => {
@@ -292,36 +302,42 @@ const ManageProducts = () => {
     setSearching(false);
     setSearchTerm('');
     setTotal(tempTotal);
-    // setActualPage(tempCurrentPage);
+    setActualPage(tempCurrentPage);
     setPageCount(Math.ceil(tempTotal / 20));
     setInvalidSearchTerm(false);
-    // setEvidences(tempEvidences);
-    mapProducts(products);
+    mapProducts(tempProducts);
   }
 
   const search = async(value = '') => {
 
     setSearchTerm(value);
 
+    if( searchFilter.length === 0 ){
+      Swal.fire('Error', 'To search, you must select a search filter', 'error' );
+      return;
+    }
+
     if ( value.length === 0 ) {
-        clearSearch();
-        return;
+      clearSearch();
+      return;
     }
 
     if ( value.length < 5 ) {
-        setInvalidSearchTerm(true);
-        return;
+      setInvalidSearchTerm(true);
+      return;
     }
 
     setInvalidSearchTerm(false);
     setCharging(true);
-    const resp = await fetchConToken( `evidence?page=${ actualPage }&description=${ value }&is_active=true`, token );
+    const resp = await fetchConToken( `product?${searchFilter}=${ value }&page=${ actualPage }`, token );
 
-    if( resp?.ok ){
+    if( resp?.success && resp?.data ){
       setActualPage(1);
-      mapProducts(resp?.data);
-      setPageCount(Math.ceil(resp?.dataNumber / 20));
-      setTotal(resp?.dataNumber);
+      mapProducts(resp?.data.products);
+      setPageCount(Math.ceil(resp?.data.dataCount / 20));
+      setTotal(resp?.data.dataCount);
+    }else{
+      mapProducts([]);
     }
 
     setCharging(false);
@@ -365,24 +381,20 @@ const ManageProducts = () => {
             <Box sx={{ display: 'flex', marginTop: '10px', marginBottom: '30px', width: '100%', gap: '10px' }}>
 
               <Box sx={{ width: '20%' }}>
-                <Button
-                    onClick={() => clearSearch()}
-                    sx={{
-                        width: '100%',
-                        bgcolor: '#E32C6D',
-                        color: '#ffffff',
-                        height: '40px',
-                        '&:hover': {
-                            backgroundColor: '#c1064a',
-                            color: 'white'
-                        }
-                    }}
+                <CustomSelect
+                  labelId="is_active"
+                  id="is-active-select"
+                  value={searchFilter}
+                  onChange={(e) => setSearchFilter(e.target.value)}
+                  size="small"
+                  fullWidth
                 >
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <FeatherIcon icon="x-circle" width="15" />
-                        <span style={{ marginLeft: '5px' }}>Limpiar búsqueda</span>
-                    </Box>
-                </Button>
+                  <MenuItem value='' disabled>Select an option</MenuItem>
+                  <MenuItem value='name'>Search by name</MenuItem>
+                  <MenuItem value='nsn'>Search by nsn</MenuItem>
+                  <MenuItem value='partNumber'>Search by part number</MenuItem>
+                  <MenuItem value='itemNumber'>Search by item number</MenuItem>
+                </CustomSelect>
               </Box>
 
               <Box sx={{ width: '60%' }}>
@@ -410,14 +422,14 @@ const ManageProducts = () => {
                         color: '#ffffff',
                         height: '40px',
                         '&:hover': {
-                            backgroundColor: '#c1064a',
-                            color: 'white'
+                          backgroundColor: '#c1064a',
+                          color: 'white'
                         }
                     }}
                 >
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <FeatherIcon icon="x-circle" width="15" />
-                        <span style={{ marginLeft: '5px' }}>Limpiar búsqueda</span>
+                        <span style={{ marginLeft: '5px' }}>Clear search</span>
                     </Box>
                 </Button>
               </Box>

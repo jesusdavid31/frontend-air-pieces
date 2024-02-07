@@ -6,13 +6,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Grid, Typography, Card, CardContent, Box } from '@mui/material';
+import { Grid, Typography, Card, CardContent, Box, InputAdornment, MenuItem, OutlinedInput, Button } from '@mui/material';
 import FeatherIcon from 'feather-icons-react';
 
 import { fetchConToken } from '../../../helpers/fetch';
 
 import 'moment/locale/es';
 import DynamicTable from '../../../components/dynamic-table/DynamicTable';
+import CustomSelect from '../../../components/FormElements/custom-elements/CustomSelect';
 
 // import headerImg from '../../../assets/images/project/header.jpg';
 import plan1 from '../../../assets/images/project/plan-1.jpg';
@@ -198,11 +199,72 @@ function LandingPage() {
             </section>
 
             <Grid container spacing={0} sx={{ padding: '100px' }}>
-                <Box sx={{ marginBottom: '50px', textAlign: 'center' }}>
+
+                <Box sx={{ width: '100%', marginBottom: '50px', textAlign: 'center' }}>
                     <Typography sx={{ fontSize: '40px', fontWeight: '600' }}>Total items: {total}</Typography>
                 </Box>
-                <Box>
-                    <Card variant="outlined">
+
+                <Box sx={{ display: 'flex', marginTop: '10px', marginBottom: '30px', width: '100%', gap: '10px' }}>
+
+                    <Box sx={{ width: '20%' }}>
+                        <CustomSelect
+                            labelId="is_active"
+                            id="is-active-select"
+                            // value={searchFilter}
+                            // onChange={(e) => setSearchFilter(e.target.value)}
+                            size="small"
+                            fullWidth
+                        >
+                            <MenuItem value='' disabled>Select an option</MenuItem>
+                            <MenuItem value='name'>Search by name</MenuItem>
+                            <MenuItem value='nsn'>Search by nsn</MenuItem>
+                            <MenuItem value='partNumber'>Search by part number</MenuItem>
+                            <MenuItem value='itemNumber'>Search by item number</MenuItem>
+                        </CustomSelect>
+                    </Box>
+
+                    <Box sx={{ width: '60%' }}>
+                        <OutlinedInput
+                            startAdornment={
+                                <InputAdornment position="start">
+                                    <FeatherIcon icon="search" width="20" />
+                                </InputAdornment>
+                            }
+                            id="search-text" 
+                            // value={searchTerm}
+                            placeholder="Introduzca el término de búsqueda"
+                            // onChange={e => search(e.target.value)}
+                            fullWidth
+                            size="small"
+                        />
+                    </Box>
+
+                    <Box sx={{ width: '20%' }}>
+                        <Button
+                            // onClick={() => clearSearch()}
+                            sx={{
+                                width: '100%',
+                                bgcolor: '#E32C6D',
+                                color: '#ffffff',
+                                height: '40px',
+                                '&:hover': {
+                                    backgroundColor: '#c1064a',
+                                    color: 'white'
+                                }
+                            }}
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <FeatherIcon icon="x-circle" width="15" />
+                                <span style={{ marginLeft: '5px' }}>Clear search</span>
+                            </Box>
+                        </Button>
+                    </Box>
+
+                </Box>
+
+
+                <Box sx={{ width: '100%' }}>
+                    <Card variant="outlined" sx={{ margin: '0px' }}>
                         <CardContent>
                             <Typography variant="h3">Products</Typography>
                             <Box
