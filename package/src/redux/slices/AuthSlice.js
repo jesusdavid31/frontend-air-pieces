@@ -2,7 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     token: '',
-    // charging: false,
     rememberMe: false,
     emailSaved: '',
     password: ''
@@ -21,8 +20,13 @@ export const AuthSlice = createSlice({
             state.emailSaved = action.payload.email;
             state.password = action.payload.password;
         },
-
-        onLogout: () => initialState,
+        onLogout: (state) => {
+            if(!state.rememberMe){
+                return initialState;
+            }else{
+                state.token = '';
+            }
+        },
     },
 });
 

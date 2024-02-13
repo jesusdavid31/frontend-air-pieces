@@ -1,11 +1,12 @@
 import React from "react";
-//import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 // import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 // import AddToPhotosOutlinedIcon from '@mui/icons-material/AddToPhotosOutlined';
-import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+// import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+// import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 import {
@@ -17,13 +18,18 @@ import {
   MenuItem,
   Button,
   Avatar,
-  Divider,
   ListItemIcon,
 } from "@mui/material";
+
+import { onLogout } from "../../../redux/slices/AuthSlice";
 
 import userimg from "../../../assets/images/users/user.jpg";
 
 const Header = (props) => {
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   // const [anchorEl, setAnchorEl] = React.useState(null);
 
   // const handleClick = (event) => {
@@ -43,6 +49,8 @@ const Header = (props) => {
 
   const handleClose4 = () => {
     setAnchorEl4(null);
+    dispatch(onLogout());
+    navigate('/auth/login');
   };
 
   // 5

@@ -41,12 +41,12 @@ moment.locale('es');
 const columns = [
   { id: "img", label: "Product Image" },
   { id: "name", label: "Name" },
-  { id: "price", label: "Price" },
-  { id: "stock", label: "Stock" },
-  { id: "marketplace", label: "Marketplace" },
-  { id: "nsn", label: "Nsn" },
   { id: "partNumber", label: "Part Number" },
   { id: "itemNumber", label: "Item Number" },
+  { id: "nsn", label: "Nsn" },
+  { id: "stock", label: "Stock" },
+  { id: "price", label: "Price" },
+  { id: "marketplace", label: "Marketplace" },
   { id: "options", label: "Actions" },
 ];
 
@@ -536,10 +536,8 @@ const ManageProducts = () => {
                   title={ actionText }
                 >
                   <ProductForm
-                    values={values}
                     errors={errors}
                     getFieldProps={getFieldProps} 
-                    setFieldValue={setFieldValue}
                     touched={touched}
                     saveForm={handleSubmit}
                     updateData={updateData}

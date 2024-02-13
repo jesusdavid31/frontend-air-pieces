@@ -10,7 +10,7 @@ import CustomFormLabel from '../../../../../components/FormElements/custom-eleme
 import CustomTextField from '../../../../../components/FormElements/custom-elements/CustomTextField';
 // import CustomSelect from '../../../../../components/FormElements/custom-elements/CustomSelect';
 
-const ProductForm = ( { values, errors, getFieldProps, setFieldValue, touched, saveForm, updateData } ) => {
+const ProductForm = ( { errors, getFieldProps, touched, saveForm, updateData } ) => {
 
     return (
         <>
@@ -109,22 +109,6 @@ const ProductForm = ( { values, errors, getFieldProps, setFieldValue, touched, s
                         { (touched.itemNumber && errors.itemNumber) && <span className='invalid-field'>{errors.itemNumber}</span> }
                     </Grid>
 
-                    {/* { updateData && 
-                        <Grid item xs={12} lg={12} md={12} className={ updateData ? 'half-container' : 'complete-box' }>
-                            <CustomFormLabel htmlFor="is_active">Estado</CustomFormLabel>
-                            <CustomSelect
-                                labelId="is_active"
-                                id="is-active-select"
-                                value={values.is_active}
-                                onChange={(e) => setFieldValue('is_active', e.target.value)}
-                                fullWidth
-                            >
-                                <MenuItem value>Activo</MenuItem>
-                                <MenuItem value={false}>No activo</MenuItem>
-                            </CustomSelect>
-                        </Grid>
-                    } */}
-
                     <Grid item xs={12} lg={12} md={12}>
                         <Fab
                             variant="extended"
@@ -147,7 +131,7 @@ const ProductForm = ( { values, errors, getFieldProps, setFieldValue, touched, s
                                     ml: 1
                                 }}
                             >
-                                { updateData ? 'Save' : 'Update' }
+                                { updateData ? 'Update' : 'Save' }
                             </Typography>
                         </Fab>
                     </Grid>
