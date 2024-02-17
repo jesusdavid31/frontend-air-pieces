@@ -11,6 +11,7 @@ const BlankLayout = lazy(() => import('../layouts/blank-layout/BlankLayout'));
 
 /*****Pages******/
 const ManageProducts = lazy(() => import('../views/dashboard/manage-products/ManageProducts'));
+const Reports = lazy(() => import('../views/dashboard/reports/Reports'));
 
 /* ***Authentication**** */
 const Login = lazy(() => import('../views/authentication/login/Login'));
@@ -49,6 +50,7 @@ const ThemeRoutes = [
     children: [
       // { path: '/', element: <Navigate to="/manage-products" /> }, esto da error
       { path: 'manage-products', exact: true, element: <ManageProducts /> },
+      { path: 'reports', exact: true, element: <Reports /> },
       { path: '*', element: <Navigate to="/auth/404" /> },
     ],
   },
