@@ -59,7 +59,7 @@ const fetchConToken = ( endpoint = '', token = '', data = {}, method = 'GET' ) =
         return fetch( url, {
             method,
             headers: {
-                'x-token': token
+                'Authorization': token
             }
         }).then( resp => resp.json() )
         .then( (resp) => {
@@ -76,7 +76,7 @@ const fetchConToken = ( endpoint = '', token = '', data = {}, method = 'GET' ) =
         method,
         headers: {
             'Content-type': 'application/json',
-            'x-token': token
+            'Authorization': token
         },
         body: JSON.stringify( data )
     })
@@ -98,7 +98,7 @@ const fetchWithTokenAndFormData = ( endpoint = '', token = '', formData = {}, me
     return fetch( url, {
         method,
         headers: {
-            'x-token': token
+            'Authorization': token
         },
         body: formData
     })

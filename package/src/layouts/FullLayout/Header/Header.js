@@ -11,6 +11,7 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 import {
   AppBar,
+  useMediaQuery, 
   Box,
   IconButton,
   Toolbar,
@@ -29,6 +30,8 @@ const Header = (props) => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"));
 
   // const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -70,10 +73,10 @@ const Header = (props) => {
         <IconButton
           color="inherit"
           aria-label="menu"
-          onClick={props.toggleMobileSidebar}
+          onClick={lgUp ? props.toggleSidebar : props.toggleMobileSidebar}
           sx={{
             display: {
-              lg: "none",
+              // lg: "none",
               xs: "inline",
             },
           }}

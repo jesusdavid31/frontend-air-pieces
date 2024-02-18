@@ -25,6 +25,7 @@ import SimpleDialog from '../../../components/modal/SimpleDialog';
 import Breadcrumb from '../../../layouts/FullLayout/Breadcrumb/Breadcrumb';
 import PageContainer from '../../../components/container/PageContainer';
 import ProductForm from './components/product-form/ProductForm';
+import HandleSales from './components/handle-sales/HandleSales';
 
 import { fetchConToken } from '../../../helpers/fetch';
 import { sweetalert } from '../../../utils/sweetalert';
@@ -72,10 +73,11 @@ const ManageProducts = () => {
 
   const [createData, setCreateData] = useState(false);
   const [updateData, setUpdateData] = useState(false);
-  const [actionText, setActionText] = useState('Crear afirmación');
+  const [actionText, setActionText] = useState('');
 
   const [modalIcon, setModalIcon] = React.useState('plus-circle');
   const [openModal, setOpenModal] = React.useState(false);
+  const [openSalesModal, setOpenSalesModal] = React.useState(false);
 
   // Menu de acciones de filtrado
   const [anchorEl, setAnchorEl] = useState(null);
@@ -90,21 +92,41 @@ const ManageProducts = () => {
   const [invalidSearchTerm, setInvalidSearchTerm] = useState(false);
   const searchField = useState('');
 
+  const formatPrice = (value = 0) => {
+    const data = value.toFixed(2);
+    let partsNumber = data.split('.');
+    partsNumber[0] = partsNumber[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return partsNumber.join('.');
+  }
+
   const mapProducts = (data) => {
     const result = data.map((item) => ({
       ...item,
+      price: `USD $ ${formatPrice(item.price)}`,
       img: ( <img src={item?.img ? item?.img : withoutImage} alt="img" width={100} height={100} className='product-image' /> ),
       options: (
-        <IconButton onClick={() => handleModalOpen( 'update', item )}>
-          <FeatherIcon
-            icon="edit"
-            width="18"
-            height="18"
-            sx={{
-              color: (theme) => theme.palette.grey.A200,
-            }} 
-          />
-        </IconButton>
+        <Box sx={{ display: 'flex', gap: '10px' }}>
+          <IconButton onClick={() => handleModalOpen( 'update', item )}>
+            <FeatherIcon
+              icon="edit"
+              width="18"
+              height="18"
+              sx={{
+                color: (theme) => theme.palette.grey.A200,
+              }} 
+            />
+          </IconButton>
+          <IconButton onClick={() => handleOpenSalesModal( item._id )}>
+            <FeatherIcon
+              icon="dollar-sign"
+              width="18"
+              height="18"
+              sx={{
+                color: (theme) => theme.palette.grey.A200,
+              }} 
+            />
+          </IconButton>
+        </Box>
       ),
     }));
     setProducts(result);
@@ -172,7 +194,7 @@ const ManageProducts = () => {
       marketplace: Yup.number()
       .required('This field is required')
       .min(1, 'This field must have a minimum value of 1')
-      .max(100000, 'This field must have a maximum value of 1,000,000'),
+      .max(100, 'This field must have a maximum value of 100'),
       nsn: Yup.string()
       .required('This field is required')
       .min(9, 'This field must be a minimum of 9 characters')
@@ -269,6 +291,16 @@ const ManageProducts = () => {
     setUpdateData(false);
   };
 
+  const handleOpenSalesModal = ( productId ) => {
+    setActionText('Register sale');
+    setProductId(productId);
+    setOpenSalesModal(true);
+  };
+
+  const handleClosedSalesModal = () => {
+    setOpenSalesModal(false);
+  };
+
   const handlePageClick = (event, value) => {
     setActualPage(value);
     if(searchTerm.length > 0){
@@ -347,12 +379,12 @@ const ManageProducts = () => {
   const searchByPage = async(term, getFrom) => {
 
     setCharging(true);
-    const resp = await fetchConToken( `evidence?page=${ getFrom }&description=${ term }&is_active=true`, token );
+    const resp = await fetchConToken( `product?${searchFilter}=${ term }&page=${ getFrom }`, token );
     
-    if( resp?.ok ){
-      mapProducts(resp?.data);
-      setPageCount(Math.ceil(resp?.dataNumber / 20));
-      setTotal(resp?.dataNumber);
+    if( resp?.success && resp?.data ){
+      mapProducts(resp?.data.products);
+      setPageCount(Math.ceil(resp?.data.dataCount / 20));
+      setTotal(resp?.data.dataCount);
     }
 
     setCharging(false);
@@ -544,7 +576,22 @@ const ManageProducts = () => {
                   />
                 </Modal>
 
-                <SimpleDialog text='Error, you must change at least one field of the form to be able to update.' open={open} onClose={handleCloseSimpleDialog} color={simpleDialogTextColor} />
+                <Modal 
+                  openModal={openSalesModal}
+                  handleModalClose={handleClosedSalesModal}
+                  iconName={modalIcon}
+                  title={ actionText }
+                >
+                  <HandleSales
+                    token={token}
+                    productId={productId}
+                    getProducts={() => getProducts(actualPage)}
+                    handleModalClose={handleClosedSalesModal}
+                  />
+                </Modal>
+
+                <SimpleDialog text='Error, you must change at least one field of the form to be able to update.' 
+                  open={open} onClose={handleCloseSimpleDialog} color={simpleDialogTextColor} />
 
               </CardContent>
               

@@ -3,7 +3,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/prop-types */
-import { Grid, Fab, Typography, MenuItem } from '@mui/material';
+import { Grid, Fab, Typography } from '@mui/material';
 import FeatherIcon from 'feather-icons-react';
 
 import CustomFormLabel from '../../../../../components/FormElements/custom-elements/CustomFormLabel';

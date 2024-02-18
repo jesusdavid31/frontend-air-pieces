@@ -83,6 +83,7 @@ const Sidebar = (props) => {
       <Drawer
         anchor="left"
         open={props.isSidebarOpen}
+        onClose={props.onSidebarClose}
         variant="persistent"
         PaperProps={{
           sx: {
