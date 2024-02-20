@@ -3,14 +3,50 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/prop-types */
+import { useState } from 'react';
+
 import { Grid, Fab, Typography } from '@mui/material';
 import FeatherIcon from 'feather-icons-react';
+
+import { validateImageSize, validateImageExtension } from '../../../../../utils/validateImages';
 
 import CustomFormLabel from '../../../../../components/FormElements/custom-elements/CustomFormLabel';
 import CustomTextField from '../../../../../components/FormElements/custom-elements/CustomTextField';
 // import CustomSelect from '../../../../../components/FormElements/custom-elements/CustomSelect';
 
 const ProductForm = ( { errors, getFieldProps, touched, saveForm, updateData } ) => {
+
+    // Question image
+    const [imageFile, setImageFile] = useState(null);
+    const [allowedImageExtension, setAllowedImageExtension] = useState(true);
+    const [allowedImageSize, setAllowedImageSize] = useState(true);
+    const [tempImg, setTempImg] = useState(null);
+
+    const handleImage = (e) => {
+
+        // Validamos si no existe el archivo, es decir no se selecciono ningún archivo
+        if ( !e.target.files[0] ) {
+            // Se pone en true ya que se cancela la imagen seleccionada
+            setAllowedImageExtension(true);
+            setAllowedImageSize(true);
+            setImageFile(null);
+            setTempImg(null);
+            return;
+        }  
+
+        setImageFile(e.target.files[0]);
+
+        validateImageSize( e.target.files[0] ) ? setAllowedImageSize(false) : setAllowedImageSize(true);
+        validateImageExtension( e.target.files[0] ) ? setAllowedImageExtension(false) : setAllowedImageExtension(true);
+
+        const reader = new FileReader();
+        reader.readAsDataURL( e.target.files[0] );
+    
+        reader.onloadend = () => {
+          setTempImg(reader.result);
+        }
+    
+    };
 
     return (
         <>
@@ -107,6 +143,18 @@ const ProductForm = ( { errors, getFieldProps, touched, saveForm, updateData } )
                             error={touched.itemNumber && Boolean(errors.itemNumber)}
                         />
                         { (touched.itemNumber && errors.itemNumber) && <span className='invalid-field'>{errors.itemNumber}</span> }
+                    </Grid>
+
+                    <Grid item xs={12} lg={6} md={6}>
+                        <CustomFormLabel htmlFor="question-image">Cargar imagen de la pregunta</CustomFormLabel>
+                        { (tempImg && allowedImageExtension) && <img src={tempImg} className="selected-image" alt='imagen' /> }
+                        <CustomTextField
+                            type="file"
+                            onChange={handleImage} 
+                            fullWidth
+                        />
+                        { !allowedImageExtension && <div><span className='invalid-field'>La extensión de este archivo no está permitida, cargue un archivo con la extensión png, jpg, jpeg.</span></div> }
+                        { !allowedImageSize && <div><span className='invalid-field'>Esta imagen no está permitida porque excede el tamaño permitido de 10 MB</span></div> }
                     </Grid>
 
                     <Grid item xs={12} lg={12} md={12}>

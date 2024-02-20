@@ -13,6 +13,8 @@ import { Grid, Box, Typography,
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
+import noContentImg from '../../assets/images/project/Search Engine_Two Color.svg';
+
 const DynamicTable = ({
     columns,
     currentData,
@@ -74,7 +76,7 @@ const DynamicTable = ({
 
             { ( !isLoading && currentData.length === 0 ) && 
                 <Grid item lg={12} md={12} sm={12} sx={{ textAlign: 'center' }} className='without-results'>
-                    {/* <img src={noContentImg} alt='Sin contenido' className='no-content' /> */}
+                    <img src={noContentImg} alt='No content' className='no-content' />
                     <p>No content</p>
                 </Grid>
             }

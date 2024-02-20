@@ -205,8 +205,8 @@ const ManageProducts = () => {
       .max(64, 'This field must have a maximum of 64 characters'),
       itemNumber: Yup.string()
       .required('This field is required')
-      .min(20, 'This field must be a minimum of 20 characters')
-      .max(20, 'This field must have a maximum of 20 characters'),
+      .min(4, 'This field must be a minimum of 4 characters')
+      .max(64, 'This field must have a maximum of 64 characters'),
       // is_active: Yup.boolean()
     })
   });
@@ -370,6 +370,7 @@ const ManageProducts = () => {
       setTotal(resp?.data.dataCount);
     }else{
       mapProducts([]);
+      setTotal(0);
     }
 
     setCharging(false);
@@ -443,6 +444,7 @@ const ManageProducts = () => {
                   fullWidth
                   size="small"
                 />
+                { invalidSearchTerm && <span className='invalid-field'>To be able to perform a search you must type at least 5 characters</span> }
               </Box>
 
               <Box sx={{ width: '20%' }}>
