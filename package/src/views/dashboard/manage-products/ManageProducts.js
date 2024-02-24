@@ -31,12 +31,12 @@ import { fetchConToken } from '../../../helpers/fetch';
 import { sweetalert } from '../../../utils/sweetalert';
 import detectChanges from '../../../utils/detectChanges';
 
-import 'moment/locale/es';
 import DynamicTable from '../../../components/dynamic-table/DynamicTable';
 import CustomSelect from '../../../components/FormElements/custom-elements/CustomSelect';
 
 import './manage-products.css';
 
+import 'moment/locale/es';
 moment.locale('es');
 
 const columns = [

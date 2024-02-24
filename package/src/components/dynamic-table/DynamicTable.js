@@ -57,7 +57,7 @@ const DynamicTable = ({
                         </TableHead>
         
                         <TableBody>
-                            {currentData.map((row, index) => (
+                            {currentData?.map((row, index) => (
                                 <TableRow key={index}>
                                     {columns?.map((column) => (
                                         <TableCell key={column.id} align="center">

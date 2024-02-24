@@ -8,9 +8,9 @@ const Menuitems = [
     href: "/dashboard/manage-products",
   },
   {
-    title: "Reports",
+    title: "Manage Sales",
     icon: ReportIcon,
-    href: "/dashboard/reports",
+    href: "/dashboard/manage-sales",
   },
 ];
 
