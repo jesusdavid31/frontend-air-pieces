@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Grid, Box, Card, CardContent, Typography, IconButton, OutlinedInput, Button, InputAdornment, MenuItem, TextField } from '@mui/material';
+import { Grid, Box, Card, CardContent, Typography, IconButton, OutlinedInput, Button, InputAdornment, MenuItem } from '@mui/material';
 import FeatherIcon from 'feather-icons-react';
 
 import { fetchConToken } from '../../../helpers/fetch';
@@ -17,14 +17,13 @@ import PageContainer from '../../../components/container/PageContainer';
 import DynamicTable from '../../../components/dynamic-table/DynamicTable';
 import CustomSelect from '../../../components/FormElements/custom-elements/CustomSelect';
 
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-
-// import 'moment/locale/es';
+import CustomFormLabel from '../../../components/FormElements/custom-elements/CustomFormLabel';
+import CustomTextField from '../../../components/FormElements/custom-elements/CustomTextField';
 
 const columns = [
   { id: "name", label: "Name" },
+  { id: "partNumber", label: "Part Number" },
+  { id: "nsn", label: "Nsn" },
   { id: "saleDate", label: "Sale Date" },
   { id: "price", label: "Price" },
   { id: "quantity", label: "Quantity" },
@@ -53,6 +52,9 @@ const ManageSales = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
   const [invalidSearchTerm, setInvalidSearchTerm] = useState(false);
+
+  const [startDate, setStartDate] = useState('');
+  const [finishDate, setFinishDate] = useState('');
 
   const formatPrice = (value = 0) => {
     const data = value.toFixed(2);
@@ -89,14 +91,27 @@ const ManageSales = () => {
     try {
 
       setCharging(true);
-      const resp = await fetchConToken( `sale?page=${page}`, token );
 
-      if( resp?.success ){
+      let resp = null;
+
+      if( startDate && finishDate ){
+        resp = await fetchConToken( `sale?page=${page}&startDate=${startDate}&finishDate=${finishDate}`, token );
+      }else{
+        resp = await fetchConToken( `sale?page=${page}`, token );
+      }
+
+      if( resp?.success && resp?.data ){
         setTempSales(resp.data?.products);
         mapSalesRecords(resp.data?.products);
         setTotal(resp.data?.dataCount);
         setTempTotal(resp.data?.dataCount);
         setPageCount(Math.ceil(resp.data?.dataCount / 20));
+      }else{
+        setTempSales([]);
+        mapSalesRecords([]);
+        setTotal(0);
+        setTempTotal(0);
+        setPageCount(0);
       }
 
       setCharging(false);
@@ -185,9 +200,9 @@ const ManageSales = () => {
   };
 
   return (
-    <PageContainer title="Manage Products" description="Manage Products">
+    <PageContainer title="Manage Sales" description="Manage Sales">
       {/* breadcrumb */}
-      <Breadcrumb title="Manage Products" />
+      <Breadcrumb title="Manage Sales" />
       {/* end breadcrumb */}
 
       <Box>
@@ -201,9 +216,9 @@ const ManageSales = () => {
           spacing={0}
         >
 
-          <Grid item xs={12} sm={12} lg={12}>
+          <Grid item xs={12} sm={12} lg={12} sx={{ marginBottom: '10px' }}>
             
-            <Box sx={{ display: 'flex', marginTop: '10px', marginBottom: '30px', width: '100%', gap: '10px' }}>
+            <Box sx={{ display: 'flex', marginTop: '10px', width: '100%', gap: '10px' }}>
 
               <Box sx={{ width: '20%' }}>
                 <CustomSelect
@@ -223,14 +238,6 @@ const ManageSales = () => {
               </Box>
 
               <Box sx={{ width: '60%' }}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                              <DateTimePicker
-                                  renderInput={(props) => <TextField {...props} />}
-                                  label="Cierre del examen"
-                                  // value={selectedDate}
-                                  // onChange={ (newValue) => handleClosingDateAndTime(newValue) }
-                              />
-                          </LocalizationProvider>
                 <OutlinedInput
                   startAdornment={
                       <InputAdornment position="start">
@@ -272,7 +279,77 @@ const ManageSales = () => {
 
           </Grid>
 
-          <Grid item xs={12} sm={12} lg={12}>
+          <Grid container spacing={2} sx={{ position: 'relative' }}>
+
+            <Grid item xs={12} lg={3} md={3}>
+              {/* <CustomFormLabel htmlFor="partNumber">Start date</CustomFormLabel> */}
+              <CustomTextField 
+                  id="partNumber" 
+                  variant="outlined" 
+                  onChange={(e) => setStartDate(e.target.value)}
+                  fullWidth
+                  type='date'
+              />
+            </Grid>
+
+            <Grid item xs={12} lg={3} md={3}>
+              {/* <CustomFormLabel htmlFor="partNumber">Finish date</CustomFormLabel> */}
+              <CustomTextField 
+                  id="partNumber" 
+                  variant="outlined" 
+                  onChange={(e) => setFinishDate(e.target.value)}
+                  fullWidth
+                  type='date'
+              />
+            </Grid>
+
+            <Grid item xs={12} lg={3} md={3} sx={{ width: '100%' }}>
+              <Button
+                onClick={() => getSales(1)}
+                sx={{
+                  width: '100%',
+                  bgcolor: '#0066ff',
+                  color: '#ffffff',
+                  height: '56px',
+                  fontSize: '18px',
+                  '&:hover': {
+                    backgroundColor: '#0066ff',
+                    color: '#ffffff'
+                  }
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <FeatherIcon icon="search" width="18" />
+                  <span style={{ marginLeft: '5px' }}>Search by date</span>
+                </Box>
+              </Button>
+            </Grid>
+
+            <Grid item xs={12} lg={3} md={3} sx={{ width: '100%' }}>
+              <Button
+                onClick={() => getSales(1)}
+                sx={{
+                  width: '100%',
+                  bgcolor: '#E32C6D',
+                  color: '#ffffff',
+                  height: '56px',
+                  fontSize: '18px',
+                  '&:hover': {
+                    backgroundColor: '#c1064a',
+                    color: 'white'
+                  }
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <FeatherIcon icon="x-circle" width="18" />
+                  <span style={{ marginLeft: '5px' }}>Clear dates</span>
+                </Box>
+              </Button>
+            </Grid>
+
+          </Grid>
+
+          <Grid item xs={12} sm={12} lg={12} sx={{ marginTop: '30px' }}>
 
             <Card variant="outlined" sx={{ margin: '0px' }}>
               
