@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Grid, Box, Card, CardContent, Typography, IconButton, OutlinedInput, Button, InputAdornment, MenuItem } from '@mui/material';
+import { Grid, Box, Card, CardContent, Typography, IconButton, OutlinedInput, Button, InputAdornment, MenuItem, TextField } from '@mui/material';
 import FeatherIcon from 'feather-icons-react';
 
 import { fetchConToken } from '../../../helpers/fetch';
@@ -17,8 +17,13 @@ import PageContainer from '../../../components/container/PageContainer';
 import DynamicTable from '../../../components/dynamic-table/DynamicTable';
 import CustomSelect from '../../../components/FormElements/custom-elements/CustomSelect';
 
-import CustomFormLabel from '../../../components/FormElements/custom-elements/CustomFormLabel';
-import CustomTextField from '../../../components/FormElements/custom-elements/CustomTextField';
+// import CustomFormLabel from '../../../components/FormElements/custom-elements/CustomFormLabel';
+// import CustomTextField from '../../../components/FormElements/custom-elements/CustomTextField';
+
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const columns = [
   { id: "name", label: "Name" },
@@ -53,8 +58,8 @@ const ManageSales = () => {
   const [searchFilter, setSearchFilter] = useState('');
   const [invalidSearchTerm, setInvalidSearchTerm] = useState(false);
 
-  const [startDate, setStartDate] = useState('');
-  const [finishDate, setFinishDate] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [finishDate, setFinishDate] = useState(null);
 
   const formatPrice = (value = 0) => {
     const data = value.toFixed(2);
@@ -281,29 +286,33 @@ const ManageSales = () => {
 
           <Grid container spacing={2} sx={{ position: 'relative' }}>
 
-            <Grid item xs={12} lg={3} md={3}>
-              {/* <CustomFormLabel htmlFor="partNumber">Start date</CustomFormLabel> */}
-              <CustomTextField 
-                  id="partNumber" 
-                  variant="outlined" 
-                  onChange={(e) => setStartDate(e.target.value)}
-                  fullWidth
-                  type='date'
-              />
+            <Grid item xs={12} md={3} lg={3}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DatePicker']}>
+                  <DatePicker
+                    label="Start date"
+                    value={startDate}
+                    onChange={(newValue) => setStartDate(newValue.$d)}
+                    sx={{ width: '100%' }}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
             </Grid>
 
-            <Grid item xs={12} lg={3} md={3}>
-              {/* <CustomFormLabel htmlFor="partNumber">Finish date</CustomFormLabel> */}
-              <CustomTextField 
-                  id="partNumber" 
-                  variant="outlined" 
-                  onChange={(e) => setFinishDate(e.target.value)}
-                  fullWidth
-                  type='date'
-              />
+            <Grid item xs={12} md={3} lg={3} sx={{ width: '100%' }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DatePicker']}>
+                  <DatePicker
+                    label="Finish date"
+                    value={finishDate}
+                    onChange={(newValue) => setFinishDate(newValue.$d)}
+                    sx={{ width: '100%' }}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
             </Grid>
 
-            <Grid item xs={12} lg={3} md={3} sx={{ width: '100%' }}>
+            <Grid item xs={12} md={3} lg={3} sx={{ width: '100%' }}>
               <Button
                 onClick={() => getSales(1)}
                 sx={{
@@ -325,7 +334,7 @@ const ManageSales = () => {
               </Button>
             </Grid>
 
-            <Grid item xs={12} lg={3} md={3} sx={{ width: '100%' }}>
+            <Grid item xs={12} md={3} lg={3} sx={{ width: '100%' }}>
               <Button
                 onClick={() => getSales(1)}
                 sx={{
