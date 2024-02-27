@@ -91,7 +91,7 @@ const ManageSales = () => {
     setSales(result);
   }
 
-  const getSales = async( page = 1 ) => {
+  const getSales = async( page = 1, filteringByDate = false ) => {
 
     try {
 
@@ -99,8 +99,16 @@ const ManageSales = () => {
 
       let resp = null;
 
-      if( startDate && finishDate ){
-        resp = await fetchConToken( `sale?page=${page}&startDate=${startDate}&finishDate=${finishDate}`, token );
+      if( filteringByDate ){
+        
+        if( !startDate || !finishDate ){
+          Swal.fire('Error', 'To filter results by date you must select a value for each of the two.', 'error' );
+          setCharging(false);
+          return;
+        }else{
+          resp = await fetchConToken( `sale?page=${page}&startDate=${startDate}&finishDate=${finishDate}`, token );
+        }
+
       }else{
         resp = await fetchConToken( `sale?page=${page}`, token );
       }
@@ -173,7 +181,14 @@ const ManageSales = () => {
 
     setInvalidSearchTerm(false);
     setCharging(true);
-    const resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=${ actualPage }`, token );
+
+    let resp = null;
+
+    if( startDate && finishDate ){
+      resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=${ actualPage }&startDate=${startDate}&finishDate=${finishDate}`, token );
+    }else{
+      resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=${ actualPage }`, token );
+    }
 
     if( resp?.success && resp?.data ){
       setActualPage(1);
@@ -203,6 +218,11 @@ const ManageSales = () => {
     setCharging(false);
       
   };
+
+  const clearDates = () => {
+    setStartDate(null);
+    setFinishDate(null);
+  }
 
   return (
     <PageContainer title="Manage Sales" description="Manage Sales">
@@ -284,7 +304,7 @@ const ManageSales = () => {
 
           </Grid>
 
-          <Grid container spacing={2} sx={{ position: 'relative' }}>
+          <Grid container spacing={2}>
 
             <Grid item xs={12} md={3} lg={3}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -312,14 +332,14 @@ const ManageSales = () => {
               </LocalizationProvider>
             </Grid>
 
-            <Grid item xs={12} md={3} lg={3} sx={{ width: '100%' }}>
+            <Grid item xs={12} md={3} lg={3} sx={{ width: '100%', paddingTop: '24px !important' }}>
               <Button
-                onClick={() => getSales(1)}
+                onClick={() => getSales(1, true)}
                 sx={{
                   width: '100%',
                   bgcolor: '#0066ff',
                   color: '#ffffff',
-                  height: '56px',
+                  height: '55px',
                   fontSize: '18px',
                   '&:hover': {
                     backgroundColor: '#0066ff',
@@ -334,14 +354,14 @@ const ManageSales = () => {
               </Button>
             </Grid>
 
-            <Grid item xs={12} md={3} lg={3} sx={{ width: '100%' }}>
+            <Grid item xs={12} md={3} lg={3} sx={{ width: '100%', paddingTop: '24px !important' }}>
               <Button
-                onClick={() => getSales(1)}
+                onClick={() => clearDates()}
                 sx={{
                   width: '100%',
                   bgcolor: '#E32C6D',
                   color: '#ffffff',
-                  height: '56px',
+                  height: '55px',
                   fontSize: '18px',
                   '&:hover': {
                     backgroundColor: '#c1064a',
