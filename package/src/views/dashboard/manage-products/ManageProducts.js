@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable camelcase */
 /* eslint-disable no-use-before-define */
 /* eslint-disable react/self-closing-comp */
@@ -57,7 +58,7 @@ const ManageProducts = () => {
 
   // dialog
   const [open, setOpen] = React.useState(false);
-  const [simpleDialogTextColor, setSimpleDialogTextColor] = React.useState('error');
+  // Fin dialog
 
   const [charging, setCharging] = useState(true);
   const [products, setProducts] = useState([]);
@@ -79,10 +80,6 @@ const ManageProducts = () => {
   const [openModal, setOpenModal] = React.useState(false);
   const [openSalesModal, setOpenSalesModal] = React.useState(false);
 
-  // Menu de acciones de filtrado
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [filterStatus, setFilterStatus] = useState(true);
-  const openMenu = Boolean(anchorEl);
   const withoutImage = 'https://res.cloudinary.com/dsteu2frb/image/upload/v1706025798/samples/ecommerce/engine-153649_1280_nmko40.webp';
 
   // Estados de filtros o busquedas
@@ -90,7 +87,6 @@ const ManageProducts = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
   const [invalidSearchTerm, setInvalidSearchTerm] = useState(false);
-  const searchField = useState('');
 
   const formatPrice = (value = 0) => {
     const data = value.toFixed(2);
@@ -139,12 +135,18 @@ const ManageProducts = () => {
       setCharging(true);
       const resp = await fetchConToken( `product?page=${page}`, token );
 
-      if( resp?.success ){
+      if( resp?.success && resp?.data ){
         setTempProducts(resp.data?.products);
         mapProducts(resp.data?.products);
         setTotal(resp.data?.dataCount);
         setTempTotal(resp.data?.dataCount);
         setPageCount(Math.ceil(resp.data?.dataCount / 20));
+      }else{
+        setTempProducts([]);
+        mapProducts([]);
+        setTotal(0);
+        setTempTotal(0);
+        setPageCount(0);
       }
 
       setCharging(false);
@@ -315,21 +317,6 @@ const ManageProducts = () => {
     setOpen(false);
   };
 
-  const handleOptionsMenuState = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClosedOptionsMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const handleFilterByState = ( value ) => {
-    setAnchorEl(null);
-    setFilterStatus(value);
-    setActualPage(1);
-    getProducts(1);
-  };
-
   const clearSearch = () => {
     setSearching(false);
     setSearchTerm('');
@@ -361,7 +348,7 @@ const ManageProducts = () => {
 
     setInvalidSearchTerm(false);
     setCharging(true);
-    const resp = await fetchConToken( `product?${searchFilter}=${ value }&page=${ actualPage }`, token );
+    const resp = await fetchConToken( `product?${searchFilter}=${ value }&page=1`, token );
 
     if( resp?.success && resp?.data ){
       setActualPage(1);
@@ -593,7 +580,7 @@ const ManageProducts = () => {
                 </Modal>
 
                 <SimpleDialog text='Error, you must change at least one field of the form to be able to update.' 
-                  open={open} onClose={handleCloseSimpleDialog} color={simpleDialogTextColor} />
+                  open={open} onClose={handleCloseSimpleDialog} color={'error'} />
 
               </CardContent>
               

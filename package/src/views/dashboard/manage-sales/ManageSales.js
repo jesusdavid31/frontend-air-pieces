@@ -185,9 +185,9 @@ const ManageSales = () => {
     let resp = null;
 
     if( startDate && finishDate ){
-      resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=${ actualPage }&startDate=${startDate}&finishDate=${finishDate}`, token );
+      resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=1&startDate=${startDate}&finishDate=${finishDate}`, token );
     }else{
-      resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=${ actualPage }`, token );
+      resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=1`, token );
     }
 
     if( resp?.success && resp?.data ){
@@ -218,6 +218,14 @@ const ManageSales = () => {
     setCharging(false);
       
   };
+
+  const handleSearchByDate = () => {
+    if(searchTerm.length > 0){
+      search(searchTerm);
+    }else{
+      getSales(1, true);
+    }
+  }
 
   const clearDates = () => {
     setStartDate(null);
@@ -334,7 +342,7 @@ const ManageSales = () => {
 
             <Grid item xs={12} md={3} lg={3} sx={{ width: '100%', paddingTop: '24px !important' }}>
               <Button
-                onClick={() => getSales(1, true)}
+                onClick={() => handleSearchByDate()}
                 sx={{
                   width: '100%',
                   bgcolor: '#0066ff',
