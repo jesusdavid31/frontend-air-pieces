@@ -1,5 +1,6 @@
 import EditIcon from '@mui/icons-material/Edit';
 import ReportIcon from '@mui/icons-material/Assessment';
+import SaleIcon from '@mui/icons-material/AttachMoney';
 
 const Menuitems = [
   {
@@ -9,8 +10,13 @@ const Menuitems = [
   },
   {
     title: "Manage Sales",
-    icon: ReportIcon,
+    icon: SaleIcon,
     href: "/dashboard/manage-sales",
+  },
+  {
+    title: "Reports",
+    icon: ReportIcon,
+    href: "/dashboard/reports",
   },
 ];
 

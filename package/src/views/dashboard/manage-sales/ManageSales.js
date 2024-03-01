@@ -91,24 +91,18 @@ const ManageSales = () => {
     setSales(result);
   }
 
-  const getSales = async( page = 1, filteringByDate = false ) => {
+  const getSales = async( page = 1, resetCurrentPage = false ) => {
 
     try {
 
       setCharging(true);
-
       let resp = null;
 
-      if( filteringByDate ){
-        
-        if( !startDate || !finishDate ){
-          Swal.fire('Error', 'To filter results by date you must select a value for each of the two.', 'error' );
-          setCharging(false);
-          return;
-        }else{
-          resp = await fetchConToken( `sale?page=${page}&startDate=${startDate}&finishDate=${finishDate}`, token );
+      if( startDate && finishDate ){
+        resp = await fetchConToken( `sale?page=${page}&startDate=${startDate}&finishDate=${finishDate}`, token );
+        if(resetCurrentPage){
+          setActualPage(1);
         }
-
       }else{
         resp = await fetchConToken( `sale?page=${page}`, token );
       }
@@ -207,12 +201,21 @@ const ManageSales = () => {
   const searchByPage = async(term, getFrom) => {
 
     setCharging(true);
-    const resp = await fetchConToken( `sale?${searchFilter}=${ term }&page=${ getFrom }`, token );
+    let resp = null;
+    
+    if( startDate && finishDate ){
+      resp = await fetchConToken( `sale?${searchFilter}=${ term }&page=${ getFrom }&startDate=${startDate}&finishDate=${finishDate}`, token );
+    }else{
+      resp = await fetchConToken( `sale?${searchFilter}=${ term }&page=${ getFrom }`, token );
+    }
     
     if( resp?.success && resp?.data ){
       mapSalesRecords(resp?.data.products);
       setPageCount(Math.ceil(resp?.data.dataCount / 20));
       setTotal(resp?.data.dataCount);
+    }else{
+      mapSalesRecords([]);
+      setTotal(0);
     }
 
     setCharging(false);
@@ -220,10 +223,14 @@ const ManageSales = () => {
   };
 
   const handleSearchByDate = () => {
-    if(searchTerm.length > 0){
-      search(searchTerm);
+    if( !startDate || !finishDate ){
+      Swal.fire('Error', 'To filter results by date you must select a value for each of the two.', 'error' );
     }else{
-      getSales(1, true);
+      if(searchTerm.length > 0){
+        search(searchTerm);
+      }else{
+        getSales(1, true);
+      }
     }
   }
 

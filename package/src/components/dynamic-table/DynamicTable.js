@@ -49,7 +49,7 @@ const DynamicTable = ({
                         <TableHead className="table-thead">
                             <TableRow>
                                 {columns.map((column, index) => (
-                                    <TableCell key={index} align="center">
+                                    <TableCell key={`table-cell-${index}`} align="center">
                                         <Typography>{column.label}</Typography>
                                     </TableCell>
                                 ))}
@@ -58,9 +58,9 @@ const DynamicTable = ({
         
                         <TableBody>
                             {currentData?.map((row, index) => (
-                                <TableRow key={index}>
+                                <TableRow key={`table-row-${index}`}>
                                     {columns?.map((column) => (
-                                        <TableCell key={column.id} align="center">
+                                        <TableCell key={`data-table-cell-${column.id}`} align="center">
                                             <Typography variant="subtitle2">{row[column.id]}</Typography>
                                         </TableCell>
                                     ))}
