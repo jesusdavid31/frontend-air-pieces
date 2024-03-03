@@ -50,7 +50,7 @@ const DynamicTable = ({
                             <TableRow>
                                 {columns.map((column, index) => (
                                     <TableCell key={`table-cell-${index}`} align="center">
-                                        <Typography>{column.label}</Typography>
+                                        <Typography variant="h4" fontWeight="500">{column.label}</Typography>
                                     </TableCell>
                                 ))}
                             </TableRow>
@@ -83,7 +83,7 @@ const DynamicTable = ({
 
             { ( !isLoading && currentData.length > 0 ) && 
                 <Box 
-                sx={{ mt: 3,  display: 'flex', justifyContent: 'flex-end' }}
+                    sx={{ mt: 3,  display: 'flex', justifyContent: 'flex-end' }}
                 >
                     <Stack spacing={2} >
                         <Pagination count={totalPages} color="primary" page={actualPage} siblingCount={0} boundaryCount={2} onChange={handlePageClick}/>

@@ -448,10 +448,10 @@ const ManageProducts = () => {
                         }
                     }}
                 >
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <FeatherIcon icon="x-circle" width="15" />
-                        <span style={{ marginLeft: '5px' }}>Clear search</span>
-                    </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <FeatherIcon icon="x-circle" width="15" />
+                      <span style={{ marginLeft: '5px' }}>Clear search</span>
+                  </Box>
                 </Button>
               </Box>
 
@@ -496,41 +496,50 @@ const ManageProducts = () => {
 
                         <Box
                           sx={{
-                          padding: '0px 0px',
+                            padding: '0px 0px',
+                            gap: '10px'
                           }}
                           display="flex"
                           alignItems="center"
                           justifyContent="right"
                         >
 
-                          <Fab
-                            variant="extended"
-                            aria-label="primary-send" 
-                            type="button" 
-                            className='manually-add-questions-button'
+                          <Button
+                            onClick={() => clearSearch()}
                             sx={{
-                              mt: 2,
-                              mr: 1,
-                              mb: 2,
-                              backgroundColor: '#FFCB59',
+                              bgcolor: '#00C292',
                               color: '#ffffff',
+                              height: '40px',
                               '&:hover': {
-                                  backgroundColor: '#FFCB59',
-                                  color: '#2600FF'
+                                backgroundColor: '#0A7029',
+                                color: 'white'
                               }
                             }}
-                            onClick={() => handleModalOpen( 'create' )}
                           >
-                              <FeatherIcon icon="plus" width="20" />
-                              <Typography
-                                  sx={{
-                                      ml: 1,
-                                      textAlign: "right"
-                                  }}
-                              >
-                                Publish product
-                              </Typography>
-                          </Fab>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <FeatherIcon icon="upload" width="15" />
+                              <span style={{ marginLeft: '5px' }}>Upload excel</span>
+                            </Box>
+                          </Button>
+
+                          <Button
+                            onClick={() => handleModalOpen( 'create' )}
+                            sx={{
+                              bgcolor: '#1A97F5',
+                              color: '#ffffff',
+                              height: '40px',
+                              '&:hover': {
+                                backgroundColor: '#077eda',
+                                color: 'white'
+                              }
+                            }}
+                          >
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <FeatherIcon icon="plus" width="15" />
+                              <span style={{ marginLeft: '5px' }}>Publish product</span>
+                            </Box>
+                          </Button>
+
                         </Box>
 
                       </Grid>

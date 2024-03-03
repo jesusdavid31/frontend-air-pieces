@@ -7,8 +7,7 @@ import {
     Box, 
     Card, 
     CardContent, 
-    Typography, 
-    IconButton, 
+    Typography,  
     Button, 
     Table,
     TableBody,
@@ -21,7 +20,6 @@ import FeatherIcon from 'feather-icons-react';
 import { fetchConToken } from '../../../helpers/fetch';
 // import { sweetalert } from '../../../utils/sweetalert';
 
-import moment from 'moment';
 import Swal from 'sweetalert2';
 
 import Breadcrumb from '../../../layouts/FullLayout/Breadcrumb/Breadcrumb';
@@ -34,15 +32,15 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import noContentImg from '../../../assets/images/project/Search Engine_Two Color.svg';
 
+import './reports.css';
+
 const Reports = () => {
 
   const { token } = useSelector( state => state.auth) || {};
 
   const [charging, setCharging] = useState(false);
   const [reports, setReports] = useState([]);
-  // const [tempReports, setTempReports] = useState([]);
-
-  const [total, setTotal] = useState(0);
+  const [profits, setProfits] = useState(null);
 
   const [startDate, setStartDate] = useState(null);
   const [finishDate, setFinishDate] = useState(null);
@@ -58,11 +56,17 @@ const Reports = () => {
 
     try {
 
+      if( !startDate || !finishDate ){
+        Swal.fire('Error', 'To filter results by date you must select a value for each of the two date fields.', 'error' );
+        return
+      }
+
       setCharging(true);
       const resp = await fetchConToken( `sale-statistics?startDate=${startDate}&finishDate=${finishDate}`, token );
 
-      if( resp?.success && resp?.data ){
-        setReports(resp.data?.products);
+      if( resp?.success ){
+        setReports(resp.data?.products ?? []);
+        setProfits(resp.data?.totals ?? []);
       }
 
       setCharging(false);
@@ -78,13 +82,24 @@ const Reports = () => {
     setFinishDate(null);
   }
 
+  const generateTableCells = () => {
+    return (
+      <>
+        <TableCell/>
+        <TableCell/>
+        <TableCell/>
+        <TableCell/>
+      </>
+    );
+  }
+
   return (
     <PageContainer title="Reports" description="Reports">
       {/* breadcrumb */}
       <Breadcrumb title="Reports" />
       {/* end breadcrumb */}
 
-      <Box>
+      <Box className='reports'>
 
         <Grid
           container
@@ -177,123 +192,148 @@ const Reports = () => {
                 
                 <Box
                   sx={{
-                    overflow: {
-                      xs: 'auto',
-                      sm: 'unset',
-                    },
+                    overflow: 'auto'
                   }}
                 >
 
-                    <Grid container spacing={4}>
-                        <Grid item xs={12} md={4} lg={4}>
+                  { charging ? (
+                    <div className='center-loading'>
+                        <svg viewBox="25 25 50 50" className='loading-data'>
+                            <circle r="20" cy="50" cx="50"></circle>
+                        </svg>
+                    </div>
+                  ) : (
+                  
+                    <Table
+                      aria-label="simple table"
+                      sx={{
+                        whiteSpace: 'normal'
+                      }} 
+                    >
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>
+                              <Typography variant="h4">Product Name</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="h4">Sale Price</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="h4">Quantity Sold</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="h4">Total Sales</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="h4">First Profit</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="h4">Second Profit</Typography>
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+
+                        <TableBody>
+                          {reports?.map((element) => (
+                              <TableRow key={`report-${element.idProduct}`}>
+
+                                <TableCell sx={{ minWidth: '170px', maxWidth: '180px' }}>
+                                  <Typography color="textSecondary" variant="h6" fontWeight="400">
+                                    {element.nameProduct}
+                                  </Typography>
+                                </TableCell>
+
+                                <TableCell className='report-cell'>
+                                  <Typography color="textSecondary" variant="h6" fontWeight="400">
+                                    {`USD $ ${formatPrice(element.price)}`}
+                                  </Typography>
+                                </TableCell>
+
+                                <TableCell className='report-cell'>
+                                  <Typography color="textSecondary" variant="h6" fontWeight="400">
+                                    {element.quantity}
+                                  </Typography>
+                                </TableCell>
+
+                                <TableCell className='report-cell'>
+                                  <Typography color="textSecondary" variant="h6" fontWeight="400">
+                                    {`USD $ ${formatPrice(element.priceSale)}`}
+                                  </Typography>
+                                </TableCell>
+
+                                <TableCell className='report-cell'>
+                                  <Typography color="textSecondary" variant="h6" fontWeight="400">
+                                    {`USD $ ${formatPrice(element.firstProfit)}`}
+                                  </Typography>
+                                </TableCell>
+
+                                <TableCell className='report-cell'>
+                                  <Typography color="textSecondary" variant="h6" fontWeight="400">
+                                    {`USD $ ${formatPrice(element.secondProfit)}`}
+                                  </Typography>
+                                </TableCell>
+
+                                <TableCell>
+                                </TableCell>
                                 
-                            <Typography variant="h3" 
-                                sx={{
-                                mt: 2,
-                                mb: 2,
-                                color: '#0e86d4'
-                                }}
-                            >
-                                Total items: {total}
-                            </Typography>
-                                
-                        </Grid>
+                              </TableRow>
+                          ))}
+
+                          { reports.length > 0 && 
+                            <>
+                              <TableRow>
+                                {generateTableCells()}
+                                <TableCell>
+                                  <Typography color="textSecondary" variant="h3" fontWeight="500">
+                                    Total Sales
+                                  </Typography>
+                                </TableCell>
+                                <TableCell>
+                                  <Typography color="textSecondary" variant="h4" fontWeight="400">
+                                    {`USD $ ${formatPrice(profits.priceSale)}`}
+                                  </Typography>
+                                </TableCell>
+                              </TableRow>
+                              <TableRow>
+                                {generateTableCells()}
+                                <TableCell>
+                                  <Typography color="textSecondary" variant="h3" fontWeight="500">
+                                    First Profit
+                                  </Typography>
+                                </TableCell>
+                                <TableCell>
+                                  <Typography color="textSecondary" variant="h4" fontWeight="400">
+                                    {`USD $ ${formatPrice(profits.firstProfit)}`}
+                                  </Typography>
+                                </TableCell>
+                              </TableRow>
+                              <TableRow>
+                                {generateTableCells()}
+                                <TableCell>
+                                  <Typography color="textSecondary" variant="h3" fontWeight="500">
+                                  Second Profit
+                                  </Typography>
+                                </TableCell>
+                                <TableCell>
+                                  <Typography color="textSecondary" variant="h4" fontWeight="400">
+                                    {`USD $ ${formatPrice(profits.secondProfit)}`}
+                                  </Typography>
+                                </TableCell>
+                              </TableRow>
+                            </>
+                          }
+
+                        </TableBody>
+                    </Table>
+
+                  )}
+
+                  { ( !charging && reports.length === 0 ) && 
+                    <Grid item lg={12} md={12} sm={12} sx={{ textAlign: 'center' }} className='without-results'>
+                      <img src={noContentImg} alt='No content' className='no-content' />
+                      <p>No content</p>
                     </Grid>
-
-                    { charging ? (
-                            <div className='center-loading'>
-                                <svg viewBox="25 25 50 50" className='loading-data'>
-                                    <circle r="20" cy="50" cx="50"></circle>
-                                </svg>
-                            </div>
-                        ) : (
-                    
-                            <Table
-                                aria-label="simple table"
-                                sx={{
-                                    whiteSpace: 'normal'
-                                }} 
-                            >
-                                <TableHead>
-                                  <TableRow>
-                                    <TableCell>
-                                      <Typography variant="h5">Product Name</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="h5">Sale Price</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="h5">Quantity Sold</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="h5">Total Sales</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="h5">First Profit</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="h5">Second Profit</Typography>
-                                    </TableCell>
-                                  </TableRow>
-                                </TableHead>
-
-                                <TableBody>
-                                    {reports?.map((element) => (
-                                        <TableRow key={`report-${element._id}`}>
-
-                                          <TableCell>
-                                            <Typography color="textSecondary" variant="h6" fontWeight="400">
-                                              {element.nameProduct}
-                                            </Typography>
-                                          </TableCell>
-
-                                          <TableCell sx={{ minWidth: '150px' }}>
-                                            <Typography color="textSecondary" variant="h6" fontWeight="400">
-                                              {`USD $ ${formatPrice(element.price)}`}
-                                            </Typography>
-                                          </TableCell>
-
-                                          <TableCell>
-                                            <Typography color="textSecondary" variant="h6" fontWeight="400">
-                                              {element.quantity}
-                                            </Typography>
-                                          </TableCell>
-
-                                          <TableCell>
-                                            <Typography color="textSecondary" variant="h6" fontWeight="400">
-                                              {`USD $ ${formatPrice(element.priceSale)}`}
-                                            </Typography>
-                                          </TableCell>
-
-                                          <TableCell>
-                                            <Typography color="textSecondary" variant="h6" fontWeight="400">
-                                              {`USD $ ${formatPrice(element.firstProfit)}`}
-                                            </Typography>
-                                          </TableCell>
-
-                                          <TableCell>
-                                            <Typography color="textSecondary" variant="h6" fontWeight="400">
-                                              {`USD $ ${formatPrice(element.secondProfit)}`}
-                                            </Typography>
-                                          </TableCell>
-
-                                          <TableCell>
-                                          </TableCell>
-                                          
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-
-                        )
-                    }
-
-                    { ( !charging && reports.length === 0 ) && 
-                        <Grid item lg={12} md={12} sm={12} sx={{ textAlign: 'center' }} className='without-results'>
-                            <img src={noContentImg} alt='No content' className='no-content' />
-                            <p>No content</p>
-                        </Grid>
-                    }
+                  }
 
                 </Box>
 
