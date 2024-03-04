@@ -27,6 +27,7 @@ import Breadcrumb from '../../../layouts/FullLayout/Breadcrumb/Breadcrumb';
 import PageContainer from '../../../components/container/PageContainer';
 import ProductForm from './components/product-form/ProductForm';
 import HandleSales from './components/handle-sales/HandleSales';
+import UploadExcelProducts from './components/upload-excel-products/UploadExcelProducts';
 
 import { fetchConToken, fetchWithTokenAndFormData } from '../../../helpers/fetch';
 import { sweetalert } from '../../../utils/sweetalert';
@@ -79,6 +80,7 @@ const ManageProducts = () => {
   const [modalIcon, setModalIcon] = React.useState('plus-circle');
   const [openModal, setOpenModal] = React.useState(false);
   const [openSalesModal, setOpenSalesModal] = React.useState(false);
+  const [openExcelModal, setOpenExcelModal] = React.useState(false);
 
   const withoutImage = 'https://res.cloudinary.com/dsteu2frb/image/upload/v1706025798/samples/ecommerce/engine-153649_1280_nmko40.webp';
 
@@ -345,6 +347,17 @@ const ManageProducts = () => {
     setOpenSalesModal(false);
   };
 
+  const handleOpenExcelModal = () => {
+    setModalIcon('upload');
+    setActionText('Upload excel file');
+    setOpenExcelModal(true);
+  };
+
+  const handleExcelClosedModal = () => {
+    setModalIcon('plus-circle');
+    setOpenExcelModal(false);
+  };
+
   const handlePageClick = (event, value) => {
     setActualPage(value);
     if(searchTerm.length > 0){
@@ -547,7 +560,7 @@ const ManageProducts = () => {
                         >
 
                           <Button
-                            onClick={() => clearSearch()}
+                            onClick={() => handleOpenExcelModal()}
                             sx={{
                               bgcolor: '#00C292',
                               color: '#ffffff',
@@ -633,6 +646,15 @@ const ManageProducts = () => {
                     getProducts={() => getProducts(actualPage)}
                     handleModalClose={handleClosedSalesModal}
                   />
+                </Modal>
+
+                <Modal 
+                  openModal={openExcelModal}
+                  handleModalClose={handleExcelClosedModal}
+                  iconName={modalIcon}
+                  title={ actionText }
+                >
+                  <UploadExcelProducts handleExcelClosedModal={handleExcelClosedModal} />
                 </Modal>
 
                 <SimpleDialog text='Error, you must change at least one field of the form to be able to update.' 
