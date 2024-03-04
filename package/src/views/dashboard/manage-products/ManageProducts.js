@@ -28,7 +28,7 @@ import PageContainer from '../../../components/container/PageContainer';
 import ProductForm from './components/product-form/ProductForm';
 import HandleSales from './components/handle-sales/HandleSales';
 
-import { fetchConToken } from '../../../helpers/fetch';
+import { fetchConToken, fetchWithTokenAndFormData } from '../../../helpers/fetch';
 import { sweetalert } from '../../../utils/sweetalert';
 import detectChanges from '../../../utils/detectChanges';
 
@@ -48,7 +48,7 @@ const columns = [
   { id: "nsn", label: "Nsn" },
   { id: "stock", label: "Stock" },
   { id: "price", label: "Price" },
-  { id: "marketplace", label: "Marketplace" },
+  { id: "marketplace", label: "Mark-up%" },
   { id: "options", label: "Actions" },
 ];
 
@@ -88,6 +88,11 @@ const ManageProducts = () => {
   const [searchFilter, setSearchFilter] = useState('');
   const [invalidSearchTerm, setInvalidSearchTerm] = useState(false);
 
+  // Product image
+  const [imageFile, setImageFile] = useState(null);
+  const [allowedImageExtension, setAllowedImageExtension] = useState(true);
+  const [allowedImageSize, setAllowedImageSize] = useState(true);
+
   const formatPrice = (value = 0) => {
     const data = value.toFixed(2);
     let partsNumber = data.split('.');
@@ -99,7 +104,7 @@ const ManageProducts = () => {
     const result = data.map((item) => ({
       ...item,
       price: `USD $ ${formatPrice(item.price)}`,
-      img: ( <img src={item?.img ? item?.img : withoutImage} alt="img" width={100} height={100} className='product-image' /> ),
+      img: ( <img src={item?.img ? item?.img?.url : withoutImage} alt="img" width={100} height={100} className='product-image' /> ),
       options: (
         <Box sx={{ display: 'flex', gap: '10px' }}>
           <IconButton onClick={() => handleModalOpen( 'update', item )}>
@@ -213,15 +218,36 @@ const ManageProducts = () => {
     })
   });
 
+  const resetImage = () => {
+    setAllowedImageExtension(true);
+    setAllowedImageSize(true);
+    setImageFile(null);
+  }
+
   const saveProduct = async() => {
     try {
+
+      if( !allowedImageExtension || !allowedImageSize ){
+        return;
+      }
 
       handleModalClose();
       sweetalert('Saving', 'Please wait a moment...');
 
+      const formData = new FormData();
+      Object.entries(values).forEach(element => {
+        formData.append(element[0], element[1]);
+      });
+
+      if( imageFile ){
+        formData.append('img', imageFile);
+      }
+
       // const { is_active, ...fields } = values;
 
-      const resp = await fetchConToken( `product`, token, values, 'POST' );
+      const resp = await fetchWithTokenAndFormData( `product`, token, formData, 'POST' );
+
+      resetImage();
 
       if(resp?.success){
         getProducts(actualPage);
@@ -236,13 +262,29 @@ const ManageProducts = () => {
   const updateProduct = async() => {
     try {
 
+      if( !allowedImageExtension || !allowedImageSize ){
+        return;
+      }
+
       const fields = detectChanges(copyOfTheForm, values);
       let resp = null;
 
-      if( Object.entries(fields).length > 0 ){
+      if( Object.entries(fields).length > 0 || imageFile ){
+
         handleModalClose();
         sweetalert('Updating', 'Please wait a moment...');
-        resp = await fetchConToken( `product/${ productId }`, token, fields, 'PUT' );
+
+        const formData = new FormData();
+        Object.entries(fields).forEach(element => {
+          formData.append(element[0], element[1]);
+        });
+  
+        if( imageFile ){
+          formData.append('img', imageFile);
+        }
+        
+        resp = await fetchWithTokenAndFormData( `product/${ productId }`, token, formData, 'PUT' );
+        
       }else{
         setOpen(true);
       }
@@ -571,6 +613,11 @@ const ManageProducts = () => {
                     touched={touched}
                     saveForm={handleSubmit}
                     updateData={updateData}
+                    allowedImageExtension={allowedImageExtension}
+                    allowedImageSize={allowedImageSize}
+                    setImageFile={setImageFile}
+                    setAllowedImageExtension={setAllowedImageExtension}
+                    setAllowedImageSize={setAllowedImageSize}
                   />
                 </Modal>
 

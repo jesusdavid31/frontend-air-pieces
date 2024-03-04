@@ -14,12 +14,20 @@ import CustomFormLabel from '../../../../../components/FormElements/custom-eleme
 import CustomTextField from '../../../../../components/FormElements/custom-elements/CustomTextField';
 // import CustomSelect from '../../../../../components/FormElements/custom-elements/CustomSelect';
 
-const ProductForm = ( { errors, getFieldProps, touched, saveForm, updateData } ) => {
+const ProductForm = ( { 
+    errors, 
+    getFieldProps, 
+    touched, 
+    saveForm, 
+    updateData,
+    allowedImageExtension,
+    allowedImageSize,
+    setImageFile,
+    setAllowedImageExtension,
+    setAllowedImageSize
+} ) => {
 
-    // Question image
-    const [imageFile, setImageFile] = useState(null);
-    const [allowedImageExtension, setAllowedImageExtension] = useState(true);
-    const [allowedImageSize, setAllowedImageSize] = useState(true);
+    // Product image
     const [tempImg, setTempImg] = useState(null);
 
     const handleImage = (e) => {
@@ -45,6 +53,7 @@ const ProductForm = ( { errors, getFieldProps, touched, saveForm, updateData } )
         reader.onloadend = () => {
           setTempImg(reader.result);
         }
+
     
     };
 
@@ -153,8 +162,8 @@ const ProductForm = ( { errors, getFieldProps, touched, saveForm, updateData } )
                             onChange={handleImage} 
                             fullWidth
                         />
-                        { !allowedImageExtension && <div><span className='invalid-field'>La extensión de este archivo no está permitida, cargue un archivo con la extensión png, jpg, jpeg.</span></div> }
-                        { !allowedImageSize && <div><span className='invalid-field'>Esta imagen no está permitida porque excede el tamaño permitido de 10 MB</span></div> }
+                        { !allowedImageExtension && <div><span className='invalid-field'>This file extension is not allowed, please upload a file with png, jpg, jpeg extension.</span></div> }
+                        { !allowedImageSize && <div><span className='invalid-field'>This image is not allowed because it exceeds the allowed size of 5 MB</span></div> }
                     </Grid>
 
                     <Grid item xs={12} lg={12} md={12}>

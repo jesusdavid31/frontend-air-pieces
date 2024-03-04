@@ -2,8 +2,8 @@ const validateImageSize = ( file ) => {
 
     let invalid = false;
 
-    // Validar tamaño del archivo a subir, es de 10MB como maximo
-    if ( file.size > 10000000 ) {
+    // Validar tamaño del archivo a subir, es de 5MB como maximo
+    if ( file.size > 5000000 ) {
         // TRUE es para indicar que el tamaño del archivo subido no es permitido
         invalid = true;
     }
