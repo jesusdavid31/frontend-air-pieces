@@ -2,15 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Grid, Box, Card, CardContent, Typography, IconButton, OutlinedInput, Button, InputAdornment, MenuItem, TextField } from '@mui/material';
+import { Grid, Box, Card, CardContent, Typography, IconButton, OutlinedInput, Button, InputAdornment, MenuItem } from '@mui/material';
 import FeatherIcon from 'feather-icons-react';
 
 import { fetchConToken } from '../../../helpers/fetch';
 // import { sweetalert } from '../../../utils/sweetalert';
 // import detectChanges from '../../../utils/detectChanges';
-
-import moment from 'moment';
-import Swal from 'sweetalert2';
 
 import Breadcrumb from '../../../layouts/FullLayout/Breadcrumb/Breadcrumb';
 import PageContainer from '../../../components/container/PageContainer';
@@ -19,6 +16,10 @@ import CustomSelect from '../../../components/FormElements/custom-elements/Custo
 
 // import CustomFormLabel from '../../../components/FormElements/custom-elements/CustomFormLabel';
 // import CustomTextField from '../../../components/FormElements/custom-elements/CustomTextField';
+
+// import moment from 'moment';
+import moment from 'moment-timezone';
+import Swal from 'sweetalert2';
 
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -53,7 +54,7 @@ const ManageSales = () => {
   // const [copyOfTheForm, setCopyOfTheForm] = useState({});
 
   // Estados de filtros o busquedas
-  const [searching, setSearching] = useState(false);
+  // const [searching, setSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
   const [invalidSearchTerm, setInvalidSearchTerm] = useState(false);
@@ -73,6 +74,7 @@ const ManageSales = () => {
       ...item,
       saleDate: moment(item.saleDate).format('LLL'),
       price: `USD $ ${formatPrice(item.price)}`,
+      marketplace: `${item.marketplace}%`,
       options: (
         <Box sx={{ display: 'flex', gap: '10px' }}>
           <IconButton>
@@ -97,9 +99,9 @@ const ManageSales = () => {
 
       setCharging(true);
       let resp = null;
-
+      
       if( startDate && finishDate ){
-        resp = await fetchConToken( `sale?page=${page}&startDate=${startDate}&finishDate=${finishDate}`, token );
+        resp = await fetchConToken( `sale?page=${page}&startDate=${moment(startDate).tz("America/Chicago").format('L')}&finishDate=${moment(finishDate).tz("America/Chicago").format('L')}`, token );
         if(resetCurrentPage){
           setActualPage(1);
         }
@@ -145,7 +147,7 @@ const ManageSales = () => {
   };
 
   const clearSearch = () => {
-    setSearching(false);
+    // setSearching(false);
     setSearchTerm('');
     setTotal(tempTotal);
     setActualPage(tempCurrentPage);
@@ -179,7 +181,7 @@ const ManageSales = () => {
     let resp = null;
 
     if( startDate && finishDate ){
-      resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=1&startDate=${startDate}&finishDate=${finishDate}`, token );
+      resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=1&startDate=${moment(startDate).tz("America/Chicago").format('L')}&finishDate=${moment(finishDate).tz("America/Chicago").format('L')}`, token );
     }else{
       resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=1`, token );
     }
@@ -204,7 +206,7 @@ const ManageSales = () => {
     let resp = null;
     
     if( startDate && finishDate ){
-      resp = await fetchConToken( `sale?${searchFilter}=${ term }&page=${ getFrom }&startDate=${startDate}&finishDate=${finishDate}`, token );
+      resp = await fetchConToken( `sale?${searchFilter}=${ term }&page=${ getFrom }&startDate=${moment(startDate).tz("America/Chicago").format('L')}&finishDate=${moment(finishDate).tz("America/Chicago").format('L')}`, token );
     }else{
       resp = await fetchConToken( `sale?${searchFilter}=${ term }&page=${ getFrom }`, token );
     }

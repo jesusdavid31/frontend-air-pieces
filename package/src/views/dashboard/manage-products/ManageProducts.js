@@ -11,14 +11,12 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
 
-import { Grid, Box, Card, CardContent, Typography, Fab, IconButton, OutlinedInput, Button, InputAdornment, MenuItem } from '@mui/material';
+import { Grid, Box, Card, CardContent, Typography, IconButton, OutlinedInput, Button, InputAdornment, MenuItem } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 import { useSelector } from 'react-redux';
 import FeatherIcon from 'feather-icons-react';
-
-import moment from 'moment';
 import Swal from 'sweetalert2';
 
 import Modal from '../../../components/modal/Modal';
@@ -37,9 +35,6 @@ import DynamicTable from '../../../components/dynamic-table/DynamicTable';
 import CustomSelect from '../../../components/FormElements/custom-elements/CustomSelect';
 
 import './manage-products.css';
-
-import 'moment/locale/es';
-moment.locale('es');
 
 const columns = [
   { id: "img", label: "Product Image" },
@@ -85,7 +80,7 @@ const ManageProducts = () => {
   const withoutImage = 'https://res.cloudinary.com/dsteu2frb/image/upload/v1706025798/samples/ecommerce/engine-153649_1280_nmko40.webp';
 
   // Estados de filtros o busquedas
-  const [searching, setSearching] = useState(false);
+  // const [searching, setSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
   const [invalidSearchTerm, setInvalidSearchTerm] = useState(false);
@@ -106,6 +101,7 @@ const ManageProducts = () => {
     const result = data.map((item) => ({
       ...item,
       price: `USD $ ${formatPrice(item.price)}`,
+      marketplace: `${item.marketplace}%`,
       img: ( <img src={item?.img ? item?.img?.url : withoutImage} alt="img" width={100} height={100} className='product-image' /> ),
       options: (
         <Box sx={{ display: 'flex', gap: '10px' }}>
@@ -169,7 +165,7 @@ const ManageProducts = () => {
     getProducts(actualPage);
   }, []);
 
-  const { handleSubmit, values, errors, getFieldProps, touched, setValues, setFieldValue, resetForm } = useFormik({
+  const { handleSubmit, values, errors, getFieldProps, touched, setValues, resetForm } = useFormik({
     initialValues: {
       name: '',
       price: 0,
@@ -203,7 +199,7 @@ const ManageProducts = () => {
       marketplace: Yup.number()
       .required('This field is required')
       .min(1, 'This field must have a minimum value of 1')
-      .max(100, 'This field must have a maximum value of 100'),
+      .max(300, 'This field must have a maximum value of 300'),
       nsn: Yup.string()
       .required('This field is required')
       .min(9, 'This field must be a minimum of 9 characters')
@@ -286,6 +282,8 @@ const ManageProducts = () => {
         }
         
         resp = await fetchWithTokenAndFormData( `product/${ productId }`, token, formData, 'PUT' );
+
+        resetImage();
         
       }else{
         setOpen(true);
@@ -373,7 +371,6 @@ const ManageProducts = () => {
   };
 
   const clearSearch = () => {
-    setSearching(false);
     setSearchTerm('');
     setTotal(tempTotal);
     setActualPage(tempCurrentPage);
@@ -654,7 +651,7 @@ const ManageProducts = () => {
                   iconName={modalIcon}
                   title={ actionText }
                 >
-                  <UploadExcelProducts handleExcelClosedModal={handleExcelClosedModal} />
+                  <UploadExcelProducts handleExcelClosedModal={handleExcelClosedModal} token={token} />
                 </Modal>
 
                 <SimpleDialog text='Error, you must change at least one field of the form to be able to update.' 

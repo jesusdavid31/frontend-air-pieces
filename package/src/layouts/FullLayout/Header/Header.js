@@ -24,7 +24,7 @@ import {
 
 import { onLogout } from "../../../redux/slices/AuthSlice";
 
-import userimg from "../../../assets/images/users/user.jpg";
+import userimg from "../../../assets/images/users/undraw_male_avatar_g98d.svg";
 
 const Header = (props) => {
 
@@ -52,6 +52,9 @@ const Header = (props) => {
 
   const handleClose4 = () => {
     setAnchorEl4(null);
+  };
+
+  const handleLogout = () => {
     dispatch(onLogout());
     navigate('/auth/login');
   };
@@ -199,7 +202,7 @@ const Header = (props) => {
             </ListItemIcon>
             Settings
           </MenuItem> */}
-          <MenuItem onClick={handleClose4}>
+          <MenuItem onClick={handleLogout}>
             <ListItemIcon>
               <LogoutOutlinedIcon fontSize="small" />
             </ListItemIcon>

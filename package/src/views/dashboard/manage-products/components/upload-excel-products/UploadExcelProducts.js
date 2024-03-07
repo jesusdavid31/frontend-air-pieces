@@ -8,12 +8,16 @@ import { useState } from 'react';
 import { Box, Grid, Button } from '@mui/material';
 import FeatherIcon from 'feather-icons-react';
 
+import { fetchWithTokenAndFormData } from '../../../../../helpers/fetch';
+import { sweetalert } from '../../../../../utils/sweetalert';
 import { validateExcelFileSize, validateExcelFileExtension } from '../../../../../utils/validateImages';
 
 import CustomFormLabel from '../../../../../components/FormElements/custom-elements/CustomFormLabel';
 import CustomTextField from '../../../../../components/FormElements/custom-elements/CustomTextField';
 
-const ProductForm = ({ handleExcelClosedModal }) => {
+import Swal from 'sweetalert2';
+
+const BulkLoadModal = ({ handleExcelClosedModal, token }) => {
 
     // Excel file
     const [file, setFile] = useState(null);
@@ -38,13 +42,35 @@ const ProductForm = ({ handleExcelClosedModal }) => {
     
     };
 
-    const uploadFile = () => {
-        handleExcelClosedModal();
+    const uploadFile = async() => {
+
+        try {
+
+            if( !allowedFileExtension || !allowedFileSize ){
+                return;
+            }
+        
+            handleExcelClosedModal();
+            sweetalert('Saving', 'Please wait a moment...');
+        
+            const formData = new FormData();
+            formData.append('file', file);
+        
+            const resp = await fetchWithTokenAndFormData( `product-excel`, token, formData, 'POST' );
+        
+            if(resp?.success){
+                Swal.fire('Data saved successfully', 'Successfully created product', 'success' );
+            }
+    
+        } catch (error) {
+            Swal.fire('Error', 'An error has occurred', 'error' );
+        }
+
     }
 
     return (
         <>
-            <form onSubmit={ uploadFile } className='dynamic-form'>
+            <Box>
 
                 <Grid container spacing={4}>
 
@@ -61,7 +87,8 @@ const ProductForm = ({ handleExcelClosedModal }) => {
 
                     <Grid item xs={12} lg={12} md={12}>
                         <Button
-                            type="submit" 
+                            type="button" 
+                            onClick={uploadFile}
                             sx={{
                                 bgcolor: '#00C292',
                                 color: '#ffffff',
@@ -80,10 +107,10 @@ const ProductForm = ({ handleExcelClosedModal }) => {
                     </Grid>
 
                 </Grid>
-            </form>
+            </Box>
         </>
     );
 
 }
 
-export default ProductForm;
+export default BulkLoadModal;
