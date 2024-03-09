@@ -17,8 +17,7 @@ import CustomSelect from '../../../components/FormElements/custom-elements/Custo
 // import CustomFormLabel from '../../../components/FormElements/custom-elements/CustomFormLabel';
 // import CustomTextField from '../../../components/FormElements/custom-elements/CustomTextField';
 
-// import moment from 'moment';
-import moment from 'moment-timezone';
+import moment from 'moment';
 import Swal from 'sweetalert2';
 
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -101,7 +100,7 @@ const ManageSales = () => {
       let resp = null;
       
       if( startDate && finishDate ){
-        resp = await fetchConToken( `sale?page=${page}&startDate=${moment(startDate).tz("America/Chicago").format('L')}&finishDate=${moment(finishDate).tz("America/Chicago").format('L')}`, token );
+        resp = await fetchConToken( `sale?page=${page}&startDate=${moment(startDate).format('YYYY-MM-DD')}&finishDate=${moment(finishDate).format('YYYY-MM-DD')}`, token );
         if(resetCurrentPage){
           setActualPage(1);
         }
@@ -181,7 +180,7 @@ const ManageSales = () => {
     let resp = null;
 
     if( startDate && finishDate ){
-      resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=1&startDate=${moment(startDate).tz("America/Chicago").format('L')}&finishDate=${moment(finishDate).tz("America/Chicago").format('L')}`, token );
+      resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=1&startDate=${moment(startDate).format('YYYY-MM-DD')}&finishDate=${moment(finishDate).format('YYYY-MM-DD')}`, token );
     }else{
       resp = await fetchConToken( `sale?${searchFilter}=${ value }&page=1`, token );
     }
@@ -206,7 +205,7 @@ const ManageSales = () => {
     let resp = null;
     
     if( startDate && finishDate ){
-      resp = await fetchConToken( `sale?${searchFilter}=${ term }&page=${ getFrom }&startDate=${moment(startDate).tz("America/Chicago").format('L')}&finishDate=${moment(finishDate).tz("America/Chicago").format('L')}`, token );
+      resp = await fetchConToken( `sale?${searchFilter}=${ term }&page=${ getFrom }&startDate=${moment(startDate).format('YYYY-MM-DD')}&finishDate=${moment(finishDate).format('YYYY-MM-DD')}`, token );
     }else{
       resp = await fetchConToken( `sale?${searchFilter}=${ term }&page=${ getFrom }`, token );
     }

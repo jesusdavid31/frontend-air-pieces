@@ -55,6 +55,11 @@ img {
   display: flex;
 }
 
+.product-image {
+  border: 1px solid #ccc;
+  border-radius: 20px;
+}
+
 body {
   font-family: "Poppins", sans-serif;
 }

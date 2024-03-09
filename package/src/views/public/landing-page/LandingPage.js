@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/label-has-associated-control */
@@ -29,12 +30,11 @@ import './landing-page.css';
 const columns = [
     { id: "img", label: "Product Image" },
     { id: "name", label: "Name" },
-    { id: "price", label: "Price" },
-    { id: "stock", label: "Stock" },
-    { id: "marketplace", label: "Marketplace" },
-    { id: "nsn", label: "Nsn" },
     { id: "partNumber", label: "Part Number" },
     { id: "itemNumber", label: "Item Number" },
+    { id: "nsn", label: "Nsn" },
+    { id: "stock", label: "Stock" },
+    { id: "price", label: "Price" },
 ];
 
 function LandingPage() {
@@ -43,6 +43,7 @@ function LandingPage() {
 
     const [charging, setCharging] = useState(true);
     const [products, setProducts] = useState([]);
+    const [tempProducts, setTempProducts] = useState([]);
   
     const [actualPage, setActualPage] = useState(1);
     const [pageCount, setPageCount] = useState(1);
@@ -50,9 +51,17 @@ function LandingPage() {
     const [tempTotal, setTempTotal] = useState(0);
     const withoutImage = 'https://res.cloudinary.com/dsteu2frb/image/upload/v1706025798/samples/ecommerce/engine-153649_1280_nmko40.webp';
 
+    const formatPrice = (value = 0) => {
+        const data = value.toFixed(2);
+        let partsNumber = data.split('.');
+        partsNumber[0] = partsNumber[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return partsNumber.join('.');
+    }
+
     const mapProducts = (data) => {
         const result = data.map((item) => ({
             ...item,
+            price: `USD $ ${formatPrice(item.price)}`,
             img: ( <img src={item?.img ? item?.img : withoutImage} alt="img" width={100} height={100} className='product-image' /> ),
         }));
         setProducts(result);
@@ -63,13 +72,20 @@ function LandingPage() {
         try {
 
             setCharging(true);
-            const resp = await fetchConToken( `product?page=${page}`, token );
+            const resp = await fetchConToken( `product-sale?page=${page}`, token );
 
-            if( resp?.success ){
+            if( resp?.success && resp?.data ){
+                setTempProducts(resp.data?.products);
                 mapProducts(resp.data?.products);
                 setTotal(resp.data?.dataCount);
                 setTempTotal(resp.data?.dataCount);
                 setPageCount(Math.ceil(resp.data?.dataCount / 20));
+            }else{
+                setTempProducts([]);
+                mapProducts([]);
+                setTotal(0);
+                setTempTotal(0);
+                setPageCount(0);
             }
 
             setCharging(false);

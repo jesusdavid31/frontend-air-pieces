@@ -1,6 +1,10 @@
 import { lazy } from "react";
 import { Navigate } from "react-router-dom";
 
+/* ***GUARDS**** */
+import AuthGuard from '../guards/auth.guard';
+import LoggedOutGuard from '../guards/logged-out.guard';
+
 /* ****Public Pages***** */
 const LandingPage = lazy(() => import('../views/public/landing-page/LandingPage'));
 
@@ -29,26 +33,38 @@ const ThemeRoutes = [
       { path: '*', element: <Navigate to="/auth/404" /> },
     ],
   },
+
   {
-    path: '/dashboard',
-    element: <FullLayout />,
+    element: <AuthGuard />,
     children: [
-      // { path: '/', element: <Navigate to="/manage-products" /> }, esto da error
-      { path: 'manage-products', exact: true, element: <ManageProducts /> },
-      { path: 'manage-sales', exact: true, element: <ManageSales /> },
-      { path: 'reports', exact: true, element: <Reports /> },
-      { path: '*', element: <Navigate to="/auth/404" /> },
+      {
+        path: '/dashboard',
+        element: <FullLayout />,
+        children: [
+          // { path: '/', element: <Navigate to="/manage-products" /> }, esto da error
+          { path: 'manage-products', exact: true, element: <ManageProducts /> },
+          { path: 'manage-sales', exact: true, element: <ManageSales /> },
+          { path: 'reports', exact: true, element: <Reports /> },
+          { path: '*', element: <Navigate to="/auth/404" /> },
+        ],
+      }
     ],
   },
+
   {
-    path: '/auth',
-    element: <BlankLayout />,
+    element: <LoggedOutGuard />,
     children: [
-      { path: 'login', element: <Login /> },
-      { path: '404', element: <Error /> },
-      { path: '*', element: <Navigate to="/auth/404" /> },
-    ],
-  },
+      {
+        path: '/auth',
+        element: <BlankLayout />,
+        children: [
+          { path: 'login', element: <Login /> },
+          { path: '404', element: <Error /> },
+          { path: '*', element: <Navigate to="/auth/404" /> },
+        ],
+      }
+    ]
+  }
 ];
 
 export default ThemeRoutes;

@@ -30,7 +30,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-import moment from 'moment-timezone';
+import moment from 'moment';
 
 import noContentImg from '../../../assets/images/project/Search Engine_Two Color.svg';
 
@@ -64,7 +64,7 @@ const Reports = () => {
       }
 
       setCharging(true);
-      const resp = await fetchConToken( `sale-statistics?startDate=${moment(startDate).tz("America/Chicago").format('L')}&finishDate=${moment(finishDate).tz("America/Chicago").format('L')}`, token );
+      const resp = await fetchConToken( `sale-statistics?startDate=${moment(startDate).format('YYYY-MM-DD')}&finishDate=${moment(finishDate).format('YYYY-MM-DD')}`, token );
 
       if( resp?.success ){
         setReports(resp.data?.products ?? []);

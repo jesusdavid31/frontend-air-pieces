@@ -3,9 +3,10 @@
 import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 
+import { decodeJWT } from '../utils/decodeToken';
+
 import moment from 'moment';
 import 'moment/locale/es';
-import { decodeJWT } from '../utils/decodeToken';
 
 
 export const LoggedOutGuard = () => {
@@ -22,7 +23,7 @@ export const LoggedOutGuard = () => {
         
     }
     
-    return (!token || sessionExpired) ? <Outlet /> : <Navigate replace to={'/dashboard/starter'} />;
+    return (!token || sessionExpired) ? <Outlet /> : <Navigate replace to={'/dashboard/manage-products'} />;
 
 };
 

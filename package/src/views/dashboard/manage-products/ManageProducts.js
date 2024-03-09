@@ -651,7 +651,7 @@ const ManageProducts = () => {
                   iconName={modalIcon}
                   title={ actionText }
                 >
-                  <UploadExcelProducts handleExcelClosedModal={handleExcelClosedModal} token={token} />
+                  <UploadExcelProducts handleExcelClosedModal={handleExcelClosedModal} token={token} getProducts={() => getProducts(actualPage)} />
                 </Modal>
 
                 <SimpleDialog text='Error, you must change at least one field of the form to be able to update.' 

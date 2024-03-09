@@ -17,7 +17,7 @@ import CustomTextField from '../../../../../components/FormElements/custom-eleme
 
 import Swal from 'sweetalert2';
 
-const BulkLoadModal = ({ handleExcelClosedModal, token }) => {
+const BulkLoadModal = ({ handleExcelClosedModal, token, getProducts }) => {
 
     // Excel file
     const [file, setFile] = useState(null);
@@ -46,7 +46,7 @@ const BulkLoadModal = ({ handleExcelClosedModal, token }) => {
 
         try {
 
-            if( !allowedFileExtension || !allowedFileSize ){
+            if( !allowedFileExtension || !allowedFileSize || !file ){
                 return;
             }
         
@@ -60,6 +60,7 @@ const BulkLoadModal = ({ handleExcelClosedModal, token }) => {
         
             if(resp?.success){
                 Swal.fire('Data saved successfully', 'Successfully created product', 'success' );
+                getProducts();
             }
     
         } catch (error) {
