@@ -1,21 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Grid, Box, Card, CardContent, Typography, IconButton, OutlinedInput, Button, InputAdornment, MenuItem } from '@mui/material';
 import FeatherIcon from 'feather-icons-react';
 
 import { fetchConToken } from '../../../helpers/fetch';
-// import { sweetalert } from '../../../utils/sweetalert';
-// import detectChanges from '../../../utils/detectChanges';
 
+import Modal from '../../../components/modal/Modal';
+import SalesForm from './components/SalesForm';
 import Breadcrumb from '../../../layouts/FullLayout/Breadcrumb/Breadcrumb';
 import PageContainer from '../../../components/container/PageContainer';
 import DynamicTable from '../../../components/dynamic-table/DynamicTable';
 import CustomSelect from '../../../components/FormElements/custom-elements/CustomSelect';
-
-// import CustomFormLabel from '../../../components/FormElements/custom-elements/CustomFormLabel';
-// import CustomTextField from '../../../components/FormElements/custom-elements/CustomTextField';
 
 import moment from 'moment';
 import Swal from 'sweetalert2';
@@ -43,7 +40,8 @@ const ManageSales = () => {
   const [charging, setCharging] = useState(true);
   const [sales, setSales] = useState([]);
   const [tempSales, setTempSales] = useState([]);
-  // const [saleId, setSaleId] = useState('');
+  const [saleId, setSaleId] = useState('');
+  const [saleData, setSaleData] = useState(null);
 
   const [actualPage, setActualPage] = useState(1);
   const [tempCurrentPage, setTempCurrentPage] = useState(1);
@@ -51,6 +49,9 @@ const ManageSales = () => {
   const [total, setTotal] = useState(0);
   const [tempTotal, setTempTotal] = useState(0);
   // const [copyOfTheForm, setCopyOfTheForm] = useState({});
+
+  // MODAL
+  const [openModal, setOpenModal] = useState(false);
 
   // Estados de filtros o busquedas
   // const [searching, setSearching] = useState(false);
@@ -76,7 +77,7 @@ const ManageSales = () => {
       marketplace: `${item.marketplace}%`,
       options: (
         <Box sx={{ display: 'flex', gap: '10px' }}>
-          <IconButton>
+          <IconButton onClick={() => handleModalOpen( item )}>
             <FeatherIcon
               icon="edit"
               width="18"
@@ -239,6 +240,18 @@ const ManageSales = () => {
     setStartDate(null);
     setFinishDate(null);
   }
+
+  const handleModalOpen = (data = {}) => {
+    console.log(data);
+    const { _id, ...fields } = data;
+    // setSaleData();
+    setSaleId(_id);
+    setOpenModal(true);
+  };
+
+  const handleModalClose = () => {
+    setOpenModal(false);
+  };
 
   return (
     <PageContainer title="Manage Sales" description="Manage Sales">
@@ -437,6 +450,20 @@ const ManageSales = () => {
                   />
 
                 </Box>
+
+                <Modal 
+                  openModal={openModal}
+                  handleModalClose={handleModalClose}
+                  iconName={'edit'}
+                  title={'Update record'}
+                >
+                  <SalesForm
+                    token={token}
+                    productId={saleId}
+                    getSales={() => getSales(actualPage)}
+                    handleModalClose={handleModalClose}
+                  />
+                </Modal>
 
               </CardContent>
               
