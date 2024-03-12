@@ -2,7 +2,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ReportIcon from '@mui/icons-material/Assessment';
 import SaleIcon from '@mui/icons-material/AttachMoney';
 
-const Menuitems = [
+const AdminElements = [
   {
     title: "Manage Products",
     icon: EditIcon,
@@ -20,4 +20,15 @@ const Menuitems = [
   },
 ];
 
-export default Menuitems;
+const LogisticsOperatorElements = [
+  {
+    title: "Manage Products",
+    icon: EditIcon,
+    href: "/dashboard/manage-products",
+  },
+];
+
+export {
+  AdminElements,
+  LogisticsOperatorElements
+};

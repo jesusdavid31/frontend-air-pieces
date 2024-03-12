@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
@@ -14,7 +15,7 @@ import { Grid,
 import FeatherIcon from 'feather-icons-react';
 
 import { onLogin, onRememberMe } from "../../../redux/slices/AuthSlice";
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './login.css';
 
 import CustomFormLabel from '../../../components/FormElements/custom-elements/CustomFormLabel';

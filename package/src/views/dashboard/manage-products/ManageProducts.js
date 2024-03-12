@@ -478,7 +478,7 @@ const ManageProducts = () => {
                   }
                   id="search-text" 
                   value={searchTerm}
-                  placeholder="Introduzca el término de búsqueda"
+                  placeholder="Enter your search term"
                   onChange={e => search(e.target.value)}
                   fullWidth
                   size="small"

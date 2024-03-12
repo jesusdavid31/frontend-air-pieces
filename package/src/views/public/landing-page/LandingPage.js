@@ -31,7 +31,6 @@ const columns = [
     { id: "img", label: "Product Image" },
     { id: "name", label: "Name" },
     { id: "partNumber", label: "Part Number" },
-    { id: "itemNumber", label: "Item Number" },
     { id: "nsn", label: "Nsn" },
     { id: "stock", label: "Stock" },
     { id: "price", label: "Price" },
@@ -46,10 +45,16 @@ function LandingPage() {
     const [tempProducts, setTempProducts] = useState([]);
   
     const [actualPage, setActualPage] = useState(1);
+    const [tempCurrentPage, setTempCurrentPage] = useState(1);
     const [pageCount, setPageCount] = useState(1);
     const [total, setTotal] = useState(0);
     const [tempTotal, setTempTotal] = useState(0);
     const withoutImage = 'https://res.cloudinary.com/dsteu2frb/image/upload/v1706025798/samples/ecommerce/engine-153649_1280_nmko40.webp';
+
+    // Estados de filtros o busquedas
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchFilter, setSearchFilter] = useState('');
+    const [invalidSearchTerm, setInvalidSearchTerm] = useState(false);
 
     const formatPrice = (value = 0) => {
         const data = value.toFixed(2);
@@ -62,7 +67,7 @@ function LandingPage() {
         const result = data.map((item) => ({
             ...item,
             price: `USD $ ${formatPrice(item.price)}`,
-            img: ( <img src={item?.img ? item?.img : withoutImage} alt="img" width={100} height={100} className='product-image' /> ),
+            img: ( <img src={item?.img ? item?.img?.url : withoutImage} alt="img" width={100} height={100} className='product-image' /> ),
         }));
         setProducts(result);
     }
@@ -98,12 +103,78 @@ function LandingPage() {
 
     const handlePageClick = (event, value) => {
         setActualPage(value);
-        getProducts(value);
+        if(searchTerm.length > 0){
+            searchByPage(searchTerm, value);
+        }else{
+            setTempCurrentPage(value);
+            getProducts(value);
+        }
     };
 
     useEffect(() => {
         getProducts(actualPage);
     }, []);
+
+    const clearSearch = () => {
+        setSearchTerm('');
+        setTotal(tempTotal);
+        setActualPage(tempCurrentPage);
+        setPageCount(Math.ceil(tempTotal / 20));
+        setInvalidSearchTerm(false);
+        mapProducts(tempProducts);
+    }
+
+    const search = async(value = '') => {
+
+        setSearchTerm(value);
+    
+        if( searchFilter.length === 0 ){
+            Swal.fire('Error', 'To search, you must select a search filter', 'error' );
+            return;
+        }
+    
+        if ( value.length === 0 ) {
+            clearSearch();
+            return;
+        }
+    
+        if ( value.length < 5 ) {
+            setInvalidSearchTerm(true);
+            return;
+        }
+    
+        setInvalidSearchTerm(false);
+        setCharging(true);
+        const resp = await fetchConToken( `product-sale?${searchFilter}=${ value }&page=1`, token );
+    
+        if( resp?.success && resp?.data ){
+            setActualPage(1);
+            mapProducts(resp?.data?.products);
+            setPageCount(Math.ceil(resp?.data.dataCount / 20));
+            setTotal(resp?.data.dataCount);
+        }else{
+            mapProducts([]);
+            setTotal(0);
+        }
+    
+        setCharging(false);
+    
+    };
+    
+    const searchByPage = async(term, getFrom) => {
+    
+        setCharging(true);
+        const resp = await fetchConToken( `product-sale?${searchFilter}=${ term }&page=${ getFrom }`, token );
+        
+        if( resp?.success && resp?.data ){
+            mapProducts(resp?.data.products);
+            setPageCount(Math.ceil(resp?.data.dataCount / 20));
+            setTotal(resp?.data.dataCount);
+        }
+    
+        setCharging(false);
+
+    };
 
     return (
         <>
@@ -124,6 +195,98 @@ function LandingPage() {
                 <img src={headerImg} className="header-image" alt="header" />
             </header> */}
 
+            <Grid container spacing={0} sx={{ padding: '100px' }}>
+
+                <Box sx={{ width: '100%', marginBottom: '50px', textAlign: 'center' }}>
+                    <Typography sx={{ fontSize: '40px', fontWeight: '600' }}>Total items: {total}</Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', marginTop: '10px', marginBottom: '30px', width: '100%', gap: '10px' }}>
+
+                    <Box sx={{ width: '20%' }}>
+                        <CustomSelect
+                            labelId="is_active"
+                            id="is-active-select"
+                            value={searchFilter}
+                            onChange={(e) => setSearchFilter(e.target.value)}
+                            size="small"
+                            fullWidth
+                        >
+                            <MenuItem value='' disabled>Select an option</MenuItem>
+                            <MenuItem value='name'>Search by name</MenuItem>
+                            <MenuItem value='nsn'>Search by nsn</MenuItem>
+                            <MenuItem value='partNumber'>Search by part number</MenuItem>
+                            <MenuItem value='itemNumber'>Search by item number</MenuItem>
+                        </CustomSelect>
+                    </Box>
+
+                    <Box sx={{ width: '60%' }}>
+                        <OutlinedInput
+                            startAdornment={
+                                <InputAdornment position="start">
+                                    <FeatherIcon icon="search" width="20" />
+                                </InputAdornment>
+                            }
+                            id="search-text" 
+                            value={searchTerm}
+                            placeholder="Enter your search term"
+                            onChange={e => search(e.target.value)}
+                            fullWidth
+                            size="small"
+                        />
+                        { invalidSearchTerm && <span className='invalid-field'>To be able to perform a search you must type at least 5 characters</span> }
+                    </Box>
+
+                    <Box sx={{ width: '20%' }}>
+                        <Button
+                            onClick={() => clearSearch()}
+                            sx={{
+                                width: '100%',
+                                bgcolor: '#E32C6D',
+                                color: '#ffffff',
+                                height: '40px',
+                                '&:hover': {
+                                    backgroundColor: '#c1064a',
+                                    color: 'white'
+                                }
+                            }}
+                        >
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <FeatherIcon icon="x-circle" width="15" />
+                                <span style={{ marginLeft: '5px' }}>Clear search</span>
+                            </Box>
+                        </Button>
+                    </Box>
+
+                </Box>
+
+
+                <Box sx={{ width: '100%' }}>
+                    <Card variant="outlined" sx={{ margin: '0px' }}>
+                        <CardContent>
+                            <Typography variant="h3">Products</Typography>
+                            <Box
+                                sx={{
+                                    overflow: {
+                                        xs: "auto",
+                                        sm: "unset",
+                                    },
+                                }}
+                            >
+                                <DynamicTable
+                                    columns={columns}
+                                    currentData={products}
+                                    isLoading={charging}
+                                    actualPage={actualPage}
+                                    handlePageClick={handlePageClick}
+                                    totalPages={pageCount}
+                                />
+                            </Box>
+                        </CardContent>
+                    </Card>
+                </Box>
+            </Grid>
+            
             <section className="section__container plan__container">
                 <p className="subheader">TRAVEL SUPPORT</p>
                 <h2 className="section__header">Plan your travel with confidence</h2>
@@ -213,97 +376,6 @@ function LandingPage() {
                     </div>
                 </div>
             </section>
-
-            <Grid container spacing={0} sx={{ padding: '100px' }}>
-
-                <Box sx={{ width: '100%', marginBottom: '50px', textAlign: 'center' }}>
-                    <Typography sx={{ fontSize: '40px', fontWeight: '600' }}>Total items: {total}</Typography>
-                </Box>
-
-                <Box sx={{ display: 'flex', marginTop: '10px', marginBottom: '30px', width: '100%', gap: '10px' }}>
-
-                    <Box sx={{ width: '20%' }}>
-                        <CustomSelect
-                            labelId="is_active"
-                            id="is-active-select"
-                            // value={searchFilter}
-                            // onChange={(e) => setSearchFilter(e.target.value)}
-                            size="small"
-                            fullWidth
-                        >
-                            <MenuItem value='' disabled>Select an option</MenuItem>
-                            <MenuItem value='name'>Search by name</MenuItem>
-                            <MenuItem value='nsn'>Search by nsn</MenuItem>
-                            <MenuItem value='partNumber'>Search by part number</MenuItem>
-                            <MenuItem value='itemNumber'>Search by item number</MenuItem>
-                        </CustomSelect>
-                    </Box>
-
-                    <Box sx={{ width: '60%' }}>
-                        <OutlinedInput
-                            startAdornment={
-                                <InputAdornment position="start">
-                                    <FeatherIcon icon="search" width="20" />
-                                </InputAdornment>
-                            }
-                            id="search-text" 
-                            // value={searchTerm}
-                            placeholder="Introduzca el término de búsqueda"
-                            // onChange={e => search(e.target.value)}
-                            fullWidth
-                            size="small"
-                        />
-                    </Box>
-
-                    <Box sx={{ width: '20%' }}>
-                        <Button
-                            // onClick={() => clearSearch()}
-                            sx={{
-                                width: '100%',
-                                bgcolor: '#E32C6D',
-                                color: '#ffffff',
-                                height: '40px',
-                                '&:hover': {
-                                    backgroundColor: '#c1064a',
-                                    color: 'white'
-                                }
-                            }}
-                        >
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <FeatherIcon icon="x-circle" width="15" />
-                                <span style={{ marginLeft: '5px' }}>Clear search</span>
-                            </Box>
-                        </Button>
-                    </Box>
-
-                </Box>
-
-
-                <Box sx={{ width: '100%' }}>
-                    <Card variant="outlined" sx={{ margin: '0px' }}>
-                        <CardContent>
-                            <Typography variant="h3">Products</Typography>
-                            <Box
-                                sx={{
-                                    overflow: {
-                                        xs: "auto",
-                                        sm: "unset",
-                                    },
-                                }}
-                            >
-                                <DynamicTable
-                                    columns={columns}
-                                    currentData={products}
-                                    isLoading={charging}
-                                    actualPage={actualPage}
-                                    handlePageClick={handlePageClick}
-                                    totalPages={pageCount}
-                                />
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </Box>
-            </Grid>
 
             <section className="loungee">
 

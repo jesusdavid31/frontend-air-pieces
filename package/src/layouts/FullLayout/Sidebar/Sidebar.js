@@ -1,5 +1,7 @@
-import React from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from 'react';
 import { useLocation } from "react-router";
+import { useSelector } from 'react-redux';
 import { Link, NavLink } from "react-router-dom";
 import {
   Box,
@@ -12,10 +14,13 @@ import {
 } from "@mui/material";
 import { SidebarWidth } from "../../../assets/global/Theme-variable";
 import LogoIcon from "../Logo/LogoIcon";
-import Menuitems from "./data";
+import { AdminElements, LogisticsOperatorElements } from "./data";
 
 const Sidebar = (props) => {
+
+  const { role } = useSelector( state => state.auth ) || {};
   const [open, setOpen] = React.useState(true);
+  const [menuItems, setMenuItems] = useState([]);
   const { pathname } = useLocation();
   const pathDirect = pathname;
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"));
@@ -27,6 +32,14 @@ const Sidebar = (props) => {
       setOpen(index);
     }
   };
+
+  const validateMenuData = () => {
+    role === 'super-admin' || role === 'admin' ? setMenuItems(AdminElements) : setMenuItems(LogisticsOperatorElements);
+  }
+
+  useEffect(() => {
+    validateMenuData();
+  }, []);
 
   const SidebarContent = (
     <Box sx={{ p: 3, height: "calc(100vh - 40px)" }}>
@@ -42,7 +55,7 @@ const Sidebar = (props) => {
             mt: 4,
           }}
         >
-          {Menuitems.map((item, index) => {
+          {menuItems.map((item, index) => {
             //{/********SubHeader**********/}
 
             return (
