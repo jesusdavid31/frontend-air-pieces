@@ -17,6 +17,7 @@ import noContentImg from '../../assets/images/project/Search Engine_Two Color.sv
 
 const DynamicTable = ({
     columns,
+    columnTableCells,
     currentData = [],
     isLoading = true,
     actualPage = 1,

@@ -27,9 +27,9 @@ const columns = [
   { id: "partNumber", label: "Part Number" },
   { id: "nsn", label: "Nsn" },
   { id: "saleDate", label: "Sale Date" },
-  { id: "price", label: "Price" },
-  { id: "quantity", label: "Quantity" },
+  { id: "price", label: "Price Without Mark Up" },
   { id: "marketplace", label: "Mark-up%" },
+  { id: "quantity", label: "Quantity" },
   { id: "options", label: "Actions" },
 ];
 

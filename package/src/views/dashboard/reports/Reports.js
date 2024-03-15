@@ -91,6 +91,9 @@ const Reports = () => {
         <TableCell/>
         <TableCell/>
         <TableCell/>
+        <TableCell/>
+        <TableCell/>
+        <TableCell/>
       </>
     );
   }
@@ -218,19 +221,28 @@ const Reports = () => {
                               <Typography variant="h4">Product Name</Typography>
                             </TableCell>
                             <TableCell>
-                                <Typography variant="h4">Sale Price</Typography>
+                                <Typography variant="h4">Original Price</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="h4">Price With Mark Up</Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="h4">Quantity Sold</Typography>
                             </TableCell>
                             <TableCell>
-                                <Typography variant="h4">Total Sales</Typography>
+                                <Typography variant="h4">Total Profits Without Mark Up</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="h4">Total Profits With Mark Up</Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="h4">First Profit</Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="h4">Second Profit</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="h4">Total Profits</Typography>
                             </TableCell>
                           </TableRow>
                         </TableHead>
@@ -253,13 +265,25 @@ const Reports = () => {
 
                                 <TableCell className='report-cell'>
                                   <Typography color="textSecondary" variant="h6" fontWeight="400">
+                                    {`USD $ ${formatPrice(element.priceWithMarkup)}`}
+                                  </Typography>
+                                </TableCell>
+
+                                <TableCell className='report-cell'>
+                                  <Typography color="textSecondary" variant="h6" fontWeight="400">
                                     {element.quantity}
                                   </Typography>
                                 </TableCell>
 
                                 <TableCell className='report-cell'>
                                   <Typography color="textSecondary" variant="h6" fontWeight="400">
-                                    {`USD $ ${formatPrice(element.priceSale)}`}
+                                    {`USD $ ${formatPrice(element.totalPriceSaleWithoutMarkup)}`}
+                                  </Typography>
+                                </TableCell>
+
+                                <TableCell className='report-cell'>
+                                  <Typography color="textSecondary" variant="h6" fontWeight="400">
+                                    {`USD $ ${formatPrice(element.totalPriceSaleWithMarkup)}`}
                                   </Typography>
                                 </TableCell>
 
@@ -275,6 +299,12 @@ const Reports = () => {
                                   </Typography>
                                 </TableCell>
 
+                                <TableCell className='report-cell'>
+                                  <Typography color="textSecondary" variant="h6" fontWeight="400">
+                                    {`USD $ ${formatPrice(element.totalProfit)}`}
+                                  </Typography>
+                                </TableCell>
+
                                 <TableCell>
                                 </TableCell>
                                 
@@ -287,12 +317,25 @@ const Reports = () => {
                                 {generateTableCells()}
                                 <TableCell>
                                   <Typography color="textSecondary" variant="h3" fontWeight="500">
-                                    Total Sales
+                                    Total Profits Without Mark Up
                                   </Typography>
                                 </TableCell>
                                 <TableCell>
                                   <Typography color="textSecondary" variant="h4" fontWeight="400">
-                                    {`USD $ ${formatPrice(profits.priceSale)}`}
+                                    {`USD $ ${formatPrice(profits.totalPriceSaleWithoutMarkup)}`}
+                                  </Typography>
+                                </TableCell>
+                              </TableRow>
+                              <TableRow>
+                                {generateTableCells()}
+                                <TableCell>
+                                  <Typography color="textSecondary" variant="h3" fontWeight="500">
+                                    Total Profits With Mark Up
+                                  </Typography>
+                                </TableCell>
+                                <TableCell>
+                                  <Typography color="textSecondary" variant="h4" fontWeight="400">
+                                    {`USD $ ${formatPrice(profits.totalPriceSaleWithMarkup)}`}
                                   </Typography>
                                 </TableCell>
                               </TableRow>
@@ -319,6 +362,19 @@ const Reports = () => {
                                 <TableCell>
                                   <Typography color="textSecondary" variant="h4" fontWeight="400">
                                     {`USD $ ${formatPrice(profits.secondProfit)}`}
+                                  </Typography>
+                                </TableCell>
+                              </TableRow>
+                              <TableRow>
+                                {generateTableCells()}
+                                <TableCell>
+                                  <Typography color="textSecondary" variant="h3" fontWeight="500">
+                                    Total Profits
+                                  </Typography>
+                                </TableCell>
+                                <TableCell>
+                                  <Typography color="textSecondary" variant="h4" fontWeight="400">
+                                    {`USD $ ${formatPrice(profits.totalProfit)}`}
                                   </Typography>
                                 </TableCell>
                               </TableRow>

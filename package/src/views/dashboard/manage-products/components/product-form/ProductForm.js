@@ -103,7 +103,7 @@ const ProductForm = ( {
                     </Grid>
 
                     <Grid item xs={12} lg={6} md={6}>
-                        <CustomFormLabel htmlFor="marketplace">Market place</CustomFormLabel>
+                        <CustomFormLabel htmlFor="marketplace">Mark-up%</CustomFormLabel>
                         <CustomTextField 
                             id="marketplace" 
                             variant="outlined" 

@@ -191,11 +191,11 @@ const ManageProducts = () => {
       price: Yup.number()
       .required('This field is required')
       .min(1, 'This field must have a minimum value of 1')
-      .max(100000, 'This field must have a maximum value of 1,000,000'),
+      .max(1000000000, 'This field must have a maximum value of 1,000,000,000'),
       stock: Yup.number()
       .required('This field is required')
       .min(1, 'This field must have a minimum value of 1')
-      .max(100000, 'This field must have a maximum value of 1,000,000'),
+      .max(1000000000, 'This field must have a maximum value of 1,000,000,000'),
       marketplace: Yup.number()
       .required('This field is required')
       .min(1, 'This field must have a minimum value of 1')
@@ -290,7 +290,12 @@ const ManageProducts = () => {
       }
 
       if(resp?.success){
-        getProducts(actualPage);
+        if(searchTerm.length > 0){
+          searchByPage(searchTerm, actualPage);
+        }else{
+          setTempCurrentPage(actualPage);
+          getProducts(actualPage);
+        }
         Swal.fire('Data updated successfully.', resp.message, 'success' );
       }
 
