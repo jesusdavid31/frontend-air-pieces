@@ -91,7 +91,7 @@ const fetchConToken = ( endpoint = '', token = '', data = {}, method = 'GET' ) =
     
 }
 
-const fetchWithTokenAndFormData = ( endpoint = '', token = '', formData = {}, method = 'POST' ) => {
+const fetchWithTokenAndFormData = ( endpoint = '', token = '', formData = {}, method = 'POST', handleResponseError = true ) => {
 
     const url = `${ baseUrl }/${ endpoint }`;
 
@@ -104,7 +104,9 @@ const fetchWithTokenAndFormData = ( endpoint = '', token = '', formData = {}, me
     })
     .then( resp => resp.json() )
     .then( (resp) => {
-        handleError(resp);
+        if(handleResponseError){
+            handleError(resp);
+        }
         return resp;
     })
     .catch((error) => {

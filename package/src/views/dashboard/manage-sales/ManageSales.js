@@ -41,7 +41,7 @@ const ManageSales = () => {
   const [sales, setSales] = useState([]);
   const [tempSales, setTempSales] = useState([]);
   const [saleId, setSaleId] = useState('');
-  const [saleData, setSaleData] = useState(null);
+  const [saleData, setSaleData] = useState({});
 
   const [actualPage, setActualPage] = useState(1);
   const [tempCurrentPage, setTempCurrentPage] = useState(1);
@@ -242,10 +242,13 @@ const ManageSales = () => {
   }
 
   const handleModalOpen = (data = {}) => {
-    console.log(data);
-    const { _id, ...fields } = data;
-    // setSaleData();
-    setSaleId(_id);
+    setSaleData({
+      ...saleData,
+      quantity: data.quantity,
+      price: data.price,
+      marketplace: data.marketplace
+    });
+    setSaleId(data._id);
     setOpenModal(true);
   };
 

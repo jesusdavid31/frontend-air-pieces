@@ -3,9 +3,9 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
+// import { useEffect } from 'react';
 
-import { Grid, Fab, Typography } from '@mui/material';
+import { Grid, Box, Button } from '@mui/material';
 import FeatherIcon from 'feather-icons-react';
 
 import { useFormik } from 'formik';
@@ -20,10 +20,11 @@ import CustomTextField from '../../../../components/FormElements/custom-elements
 
 const SalesForm = ( { token, saleId, getSales, handleModalClose } ) => {
 
-    const { handleSubmit, values, errors, getFieldProps, touched } = useFormik({
+    const { handleSubmit, values, errors, getFieldProps, touched, setValues } = useFormik({
         initialValues: {
-            productId: '', 
             quantity: 0,
+            price: 0, 
+            marketplace: 0
         },
         onSubmit: async() => {
             try {
@@ -39,20 +40,28 @@ const SalesForm = ( { token, saleId, getSales, handleModalClose } ) => {
                 }
           
             } catch (error) {
-                 Swal.fire('Error', 'An error has occurred', 'error' );
+                Swal.fire('Error', 'An error has occurred', 'error' );
             }
         },
         validationSchema: Yup.object({
-            productId: Yup.string()
-            .required('This field is required')
-            .min(3, 'This field must be a minimum of 3 characters')
-            .max(60, 'This field must have a maximum of 60 characters'),
             quantity: Yup.number()
-            .required('This field is required')
-            .min(1, 'This field must have a minimum value of 1')
-            .max(100000, 'This field must have a maximum value of 1,000,000')
+                .required('This field is required')
+                .min(1, 'This field must have a minimum value of 1')
+                .max(100000, 'This field must have a maximum value of 1,000,000'),
+            price: Yup.number()
+                .required('This field is required')
+                .min(1, 'This field must have a minimum value of 1')
+                .max(1000000000, 'This field must have a maximum value of 1,000,000,000'),
+            marketplace: Yup.number()
+                .required('This field is required')
+                .min(1, 'This field must have a minimum value of 1')
+                .max(300, 'This field must have a maximum value of 300'),
         })
     });
+
+    // useEffect(() => {
+    //     setValues({});
+    // }, []);
 
     return (
         <>
@@ -87,7 +96,7 @@ const SalesForm = ( { token, saleId, getSales, handleModalClose } ) => {
                     </Grid>
 
                     <Grid item xs={12} lg={6} md={6}>
-                        <CustomFormLabel htmlFor="marketplace">Market place</CustomFormLabel>
+                        <CustomFormLabel htmlFor="marketplace">Mark-up%</CustomFormLabel>
                         <CustomTextField 
                             id="marketplace" 
                             variant="outlined" 
@@ -100,30 +109,26 @@ const SalesForm = ( { token, saleId, getSales, handleModalClose } ) => {
                     </Grid>
 
                     <Grid item xs={12} lg={12} md={12}>
-                        <Fab
-                            variant="extended"
-                            aria-label="primary-send" 
+
+                        <Button
                             type="submit" 
                             sx={{
-                                mr: 1,
-                                mb: 2,
-                                backgroundColor: '#00C292',
-                                color: 'white',
+                                width: '100%',
+                                bgcolor: '#00C292',
+                                color: '#ffffff',
+                                height: '40px',
                                 '&:hover': {
                                     backgroundColor: '#0A7029',
                                     color: 'white'
                                 }
                             }}
                         >
-                            <FeatherIcon icon="edit" width="20" />
-                            <Typography
-                                sx={{
-                                    ml: 1
-                                }}
-                            >
-                                Update
-                            </Typography>
-                        </Fab>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <FeatherIcon icon="edit" width="15" />
+                                <span style={{ marginLeft: '5px' }}>Update</span>
+                            </Box>
+                        </Button>
+
                     </Grid>
 
                 </Grid>

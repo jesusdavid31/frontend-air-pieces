@@ -56,11 +56,13 @@ const BulkLoadModal = ({ handleExcelClosedModal, token, getProducts }) => {
             const formData = new FormData();
             formData.append('file', file);
         
-            const resp = await fetchWithTokenAndFormData( `product-excel`, token, formData, 'POST' );
+            const resp = await fetchWithTokenAndFormData( `product-excel`, token, formData, 'POST', false );
         
             if(resp?.success){
                 Swal.fire('Data saved successfully', 'Successfully created product', 'success' );
                 getProducts();
+            }else{
+                Swal.fire(`Error, there was an error with the column ${resp?.data[0]?.context?.key}`, resp?.data[0]?.context?.label, 'error' );
             }
     
         } catch (error) {
